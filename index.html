@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimaSense-app</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>ClimaSense</h1>
+        <div class="searchbar">
+            <input type="search" placeholder="Search for a city...">
+            <button id="search-button">
+                <img src="assets/icons/arrow-right-solid.svg" alt="Search">
+            </button>
+        </div>
+    </header>
+    <!-- Main content -->
+     <main>
+        <section class="weather-display">
+            <h2 id="location-name">Location</h2>
+            <div class="weather-info">
+                <!-- Placeholder icon for weather -->
+                <img src="assets/icons/cloud-solid.svg" alt="Cloudy weather icon" id="weather-icon">
+                <p id="temperature">--°C</p>
+                <p id="weather-condition">Condition</p>
+            </div>
+            <button id="unit-toggle">°C / °F</button>
+        </section>
+
+        <!-- 7 Forecast section -->
+         <section class="forecast">
+            <h3>7-Day Forecast</h3>
+            <div class="forecast-cards">
+                <!-- Forecast cards will be dynamically added -->
+            </div>
+         </section>
+
+        <!-- Hourly Forecast section -->
+            <section class="hourly-forecast">
+                <h3>Hourly Forecast</h3>
+                <div class="hourly-cards">
+                    <!-- Hourly forecast data will be dynamically added -->
+                </div>
+            </section>
+
+        <!-- Weather Alerts -->
+            <section class="alerts">
+                <h3>Weather Alerts</h3>
+                <p id="alert-message">No active alerts.</p>
+            </section>    
+
+        <!-- Air Quality section -->
+            <section class="air-quality">
+                <h3>Air Quality Index (AQI)</h3>
+                <div class="air-quality-info">
+                    <p id="aqi-value">--</p>
+                    <p id="aqi-description">Loading...</p>
+                </div>
+            </section>
+     </main>
+    <script src="js/script.js"></script>
+</body>
+</html>
