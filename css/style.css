@@ -1,0 +1,27 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Roboto:wght@400;500;700&family=Lato:wght@400;700&display=swap');
+
+/* Root variables */
+:root {
+    --primary-font: 'Roboto', sans-serif;
+    --header-font: 'Poppins', sans-serif;
+    --button-font: 'Lato', sans-serif;
+
+    /* Color Scheme (adjust as necessary) */
+    --primary-color: #2D9CDB; /* Blue */
+    --primary-color-hover: #1e88e5;
+    --secondary-color: #F2C94C; /* Yellow */
+    --background-color: #f5f5f5; /* Light Gray */
+    --text-color: #333333; /* Dark Gray */
+    --accent-color: #eb5757; /* Red for alerts */
+
+    /* Spacing */
+    --small-space: 8px;
+    --medium-space: 16px;
+    --large-space: 32px;
+
+    /* Font sizes */
+    --font-size-base: 1rem;
+    --font-size-large: 1.5rem;
+    --font-size-small: 0.875rem;
+}
