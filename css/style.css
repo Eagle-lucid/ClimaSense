@@ -25,3 +25,26 @@
     --font-size-large: 1.5rem;
     --font-size-small: 0.875rem;
 }
+/* Global Styles & Base style */
+*::before, *::after,
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+}
+body {
+    font-family: var(--primary-font);
+    background: url('../assets/images/summer.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: var(--text-color);
+    transition: background-image 2s ease-in-out;
+    line-height: 1.6;
+    font-size: var(--font-size-base);
+    min-height: 100vh;
+}
+/* smooth font rendering */
+html {
+    scroll-behavior: smooth;
+    --webkit-font-smoothing: antialiased;
+}
