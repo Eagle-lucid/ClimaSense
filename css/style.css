@@ -8,12 +8,12 @@
     --button-font: 'Lato', sans-serif;
 
     /* Color Scheme (adjust as necessary) */
-    --primary-color: #2D9CDB; /* Blue */
-    --primary-color-hover: #1e88e5;
-    --secondary-color: #F2C94C; /* Yellow */
-    --background-color: #f5f5f5; /* Light Gray */
-    --text-color: #333333; /* Dark Gray */
-    --accent-color: #eb5757; /* Red for alerts */
+    --primary-color: hsl(202, 71%, 52%); /* Blue */
+    --primary-color-hover: hsl(208, 79%, 51%);
+    --secondary-color: hsl(45, 86%, 62%); /* Yellow */
+    --background-color: hsl(0, 0%, 96%); /* Light Gray */
+    --text-color: hsl(0, 0%, 20%); /* Dark Gray */
+    --accent-color: hsl(0, 79%, 63%); /* Red for alerts */
 
     /* Spacing */
     --small-space: 8px;
@@ -47,4 +47,124 @@ body {
 html {
     scroll-behavior: smooth;
     --webkit-font-smoothing: antialiased;
+}
+/* header styling */
+header {
+    position: sticky;
+    top: 20px;
+    z-index: 1000; 
+    background-color: hsla(0, 0%, 100%, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--medium-space) var(--large-space);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin: 0 var(--large-space);
+    font-family: var(--header-font);
+    transition: all 0.3s ease-in-out;
+}
+/* Title styling */
+header h1 {
+    position: absolute;
+    left: var(--large-space);
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin: 0;
+    letter-spacing: var(--small-space);
+}
+/* Search Bar Container */
+.searchbar {
+    position: absolute;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--small-space);
+    background-color: hsl(0, 0%, 94%);
+    border-radius: 50px;
+    padding-left: 6px 12px;
+    transform: translateX(-50%);
+    transition: all 0.3s ease-in-out;
+}
+/* Input container */
+.searchbar .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Input field */
+.searchbar .input-wrapper #search-input {
+    border: none;
+    outline: none;
+    padding: 8px 30px 8px 10px; /* padding-right for clear button */
+    border-radius: 20px;
+    background-color: transparent;
+    font-size: var(--font-size-base);
+    width: 200px;
+}
+/*.searchbar input[type="search"] {
+    border: none;
+    outline: none;
+    padding: 8px 10px;
+    border-radius: 20px;
+    background-color: transparent;
+    font-size: var(--font-size-base);
+    width: 200px;
+}*/
+/* Remove the cancel icon from the input field */
+.searchbar input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;  /* Remove the cancel button in WebKit browsers */
+    appearance: none;
+}
+/* Hide the clear button Initially */
+.searchbar #clear-btn {
+    position: absolute;
+    right: 6px;
+    padding: 4px;
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer; 
+}
+/* Style the clear button */ 
+.searchbar #clear-btn img {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    filter: invert(0.5);
+    pointer-events: none;
+}
+#clear-btn:hover img {
+    opacity: 1;
+}
+/* Show the clear button when there's text in the input */
+.searchbar input[type="search"]:not(:placeholder-shown) + #clear-button {
+    display: block;
+}
+/* Search-button */
+#search-button {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease-in-out;
+}
+#search-button:hover {
+    background-color: var(--primary-color-hover);
+}
+/* Search icon */
+#search-button img {
+    width: 16px;
+    height: 16px;
+    filter: invert(1);
+}
+#search-button img:hover {
+    filter: invert(0.8);
 }
