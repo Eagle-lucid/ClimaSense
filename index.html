@@ -11,12 +11,14 @@
     <header>
         <h1>ClimaSense</h1>
         <div class="searchbar">
-            <input type="search" placeholder="Search for a city...">
+            <div class="input-wrapper">
+                <input type="search" id="search-input" placeholder="Search for a city...">
+                <button id="clear-btn" onclick="clearSearch()">
+                    <img src="assets/icons/xmark.svg" alt="clear">
+                </button>
+            </div>
             <button id="search-button">
                 <img src="assets/icons/arrow-right-solid.svg" alt="Search">
-            </button>
-            <button id="clear-btn" onclick="clearSearch()">
-                <img src="assets/icons/xmark.svg" alt="clear">
             </button>
         </div>
     </header>
