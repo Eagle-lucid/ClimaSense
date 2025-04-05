@@ -35,7 +35,7 @@
 }
 body {
     font-family: var(--primary-font);
-    background: url('../assets/images/summer.jpg') no-repeat center center fixed;
+    background-position: center;
     background-size: cover;
     color: var(--text-color);
     transition: background-image 2s ease-in-out;
@@ -43,6 +43,19 @@ body {
     font-size: var(--font-size-base);
     min-height: 100vh;
 }
+body.looping {
+    animation: backgroundChange 20s infinite alternate;
+    transition: background-image 1s ease;
+}
+/* Stop looping background on search or when data is loaded */
+body.static-bg {
+    animation: none !important;
+    background-size: cover;
+    background-position: center;
+    filter: blur(0px);
+    transition: background-image 1s ease;
+}
+
 /* smooth font rendering */
 html {
     scroll-behavior: smooth;
@@ -170,4 +183,22 @@ header h1 {
 }
 #loading {
     display: none;
+}
+/* Define the background images */
+@keyframes backgroundChange {
+    0% {
+        background-image: url('../assets/images/spring.jpg');
+    }
+    25% {
+        background-image: url('../assets/images/winter.jpg');
+    }
+    50% {
+        background-image: url('../assets/images/summer.jpg');
+    }
+    75% {
+        background-image: url('../assets/images/fall.jpg');
+    }
+    100% {
+        background-image: url('../assets/images/spring.jpg');
+    }
 }

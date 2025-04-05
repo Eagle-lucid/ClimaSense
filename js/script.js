@@ -1,3 +1,37 @@
+document.body.classList.add('looping');
+
+let hasSearched = false; // Flag to check if the user has searched for a city
+// Function to remove the looping class after 2 seconds
+function stopLoopAndSetWeatherBG (season) {
+    document.body.classList.remove('looping');
+    document.body.classList.add('static-bg');
+    document.body.classList.remove('spring-bg', 'summer-bg', 'autumn-bg', 'winter-bg');
+
+    const baseImagePath = './assets/images/';
+    const seasonImages = {
+        spring: `url(${baseImagePath}spring.jpg)`,
+        summer: `url(${baseImagePath}summer.jpg)`,
+        autumn: `url(${baseImagePath}autumn.jpg)`,
+        winter:`url(${baseImagePath}winter.jpg)`
+    };
+    document.body.style.backgroundImage = seasonImages[season] || seasonImages.spring;
+}
+
+// Determine season based on month
+function determineSeasonByMonth() {
+    const month = new Date().getMonth() + 1; // Months are 0-indexed in JavaScript
+    if (month >= 3 && month <= 5) {
+        return 'spring';
+    }
+    if (month >= 6 && month <= 8) {
+        return 'summer';
+    }
+    if (month >= 9 && month <= 11) {
+        return 'autumn';
+    }
+    return 'winter'; // December, January, February
+}
+
 const searchInput = document.getElementById('search-input');
 const clearButton = document.getElementById('clear-btn');
 const searchButton = document.getElementById('search-button');
@@ -67,6 +101,14 @@ async function updateWeatherUI(city) {
             const iconCode = weatherData.weather[0].icon;
             weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
             weatherIcon.alt = weatherData.weather[0].description;
+            weatherIcon.title = weatherData.weather[0].description;
+
+            // Only stop loop on first search
+            if (!hasSearched) {
+                const season = determineSeasonByMonth();
+                stopLoopAndSetWeatherBG(season); // Stop the looping background and set the weather background
+                hasSearched = true; // Set the flag to true after the first search
+            }
         }
     }  catch (error) {
         console.error('Error updating weather UI:', error);
