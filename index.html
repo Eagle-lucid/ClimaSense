@@ -13,7 +13,7 @@
         <div class="searchbar">
             <div class="input-wrapper">
                 <input type="search" id="search-input" placeholder="Search for a city...">
-                <button id="clear-btn" onclick="clearSearch()">
+                <button id="clear-btn">
                     <img src="assets/icons/xmark.svg" alt="clear">
                 </button>
             </div>
@@ -25,6 +25,8 @@
     <!-- Main content -->
      <main>
         <section class="weather-display">
+            <!-- Loading Indicator -->
+            <div id="loading">Loading...</div>
             <h2 id="location-name">Location</h2>
             <div class="weather-info">
                 <!-- Placeholder icon for weather -->
