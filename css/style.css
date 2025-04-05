@@ -168,3 +168,6 @@ header h1 {
 #search-button img:hover {
     filter: invert(0.8);
 }
+#loading {
+    display: none;
+}
