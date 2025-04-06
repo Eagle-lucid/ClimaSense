@@ -1,19 +1,20 @@
 document.body.classList.add('looping');
 
 let hasSearched = false; // Flag to check if the user has searched for a city
-// Function to remove the looping class after 2 seconds
-function stopLoopAndSetWeatherBG (season) {
-    document.body.classList.remove('looping');
-    document.body.classList.add('static-bg');
-    document.body.classList.remove('spring-bg', 'summer-bg', 'autumn-bg', 'winter-bg');
 
-    const baseImagePath = './assets/images/';
+const baseImagePath = './assets/images/';
     const seasonImages = {
         spring: `url(${baseImagePath}spring.jpg)`,
         summer: `url(${baseImagePath}summer.jpg)`,
         autumn: `url(${baseImagePath}autumn.jpg)`,
         winter:`url(${baseImagePath}winter.jpg)`
     };
+// Function to remove the looping class after 2 seconds
+function stopLoopAndSetWeatherBG (season) {
+    document.body.classList.remove('looping');
+    document.body.classList.add('static-bg');
+    document.body.classList.remove('spring-bg', 'summer-bg', 'autumn-bg', 'winter-bg');
+
     document.body.style.backgroundImage = seasonImages[season] || seasonImages.spring;
 }
 
@@ -69,8 +70,12 @@ async function fetchWeatherData(city) {
     try {
         const response = await fetch(`${baseUrl}?q=${city}&appid=${apiKey}&units=metric`);
         if (!response.ok) {
-            throw new Error('City not found');
-        }
+            if (response.status === 404) {
+                throw new Error('City not found');
+            } else {
+                throw new Error('Error fetching weather data');
+            }
+        } 
         const data = await response.json();
         return data;
     } catch (error) {
@@ -83,6 +88,8 @@ async function fetchWeatherData(city) {
 async function updateWeatherUI(city) {
     loadingElement.style.display = 'block'; // Show loading spinner
     locationName.textContent = 'Loading...'; // Show loading text
+    weatherCondition.textContent = ''; // Clear previous weather condition
+    weatherIcon.src = ''; // Clear previous weather icon
 
     try {
         const weatherData = await fetchWeatherData(city);
@@ -102,7 +109,7 @@ async function updateWeatherUI(city) {
             weatherIcon.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
             weatherIcon.alt = weatherData.weather[0].description;
             weatherIcon.title = weatherData.weather[0].description;
-
+            
             // Only stop loop on first search
             if (!hasSearched) {
                 const season = determineSeasonByMonth();
@@ -112,6 +119,11 @@ async function updateWeatherUI(city) {
         }
     }  catch (error) {
         console.error('Error updating weather UI:', error);
+        // Handle error in updating UI
+        locationName.textContent = 'Error: Unable to fetch weather data.';
+        weatherCondition.textContent = 'Please try again.';
+        weatherCondition.style.color = 'red'; // Change text color to red for error indication
+        weatherIcon.src = ''; // Clear previous weather icon
         alert('Error updating weather information. Please try again.');
     } finally {
         loadingElement.style.display = 'none'; // Hide loading spinner
