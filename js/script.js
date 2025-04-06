@@ -112,6 +112,11 @@ async function updateWeatherUI(city) {
             weatherIcon.alt = weatherData.weather[0].description;
             weatherIcon.title = weatherData.weather[0].description;
             
+            // Fetch and display hourly forecast
+            const { lat, lon } = weatherData.coord;
+            const hourlyData = await getHourlyForecast(lat, lon);
+            displayHourlyForecast(hourlyData);
+
             // Only stop loop on first search
             if (!hasSearched) {
                 const season = determineSeasonByMonth();
@@ -221,4 +226,37 @@ function displayForecastCards (forecasts) {
         `;
         forecastContainer.appendChild(card);
     });
+}
+
+// Function to fetch hourly forecast data
+async function getHourlyForecast(lat, lon) {
+    const apiKey = 'c4e0dcbdc408a1aee90230a4eed14c00';
+    const  url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.list.slice(0, 8); // Get the first 8 hours of forecast data
+}
+
+// Function to display hourly forecast data
+ function displayHourlyForecast(hourlyData) {
+    const hourlyForecastContainer = document.getElementById('hourly-forecast-container');
+    hourlyForecastContainer.innerHTML = ''; // Clear previous hourly forecast
+
+    hourlyData.forEach(hour => {
+        const time = new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const temperature = `${Math.round(hour.main.temp)}°C`;
+        const icon = hour.weather[0].icon;
+        const desc = hour.weather[0].description;
+
+        const card = document.createElement('div');
+        card.classList.add('hourly-card');
+
+        card.innerHTML = `
+        <p>${time}</p>
+        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" title="${desc}" />
+        <p>${temperature}</p>
+        `;
+        hourlyForecastContainer.appendChild(card);
+    })
 }
