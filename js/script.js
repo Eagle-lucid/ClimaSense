@@ -41,6 +41,8 @@ const temperature = document.getElementById('temperature');
 const weatherCondition = document.getElementById('weather-condition');
 const weatherIcon = document.getElementById('weather-icon');
 const loadingElement = document.getElementById('loading');
+const forecastBaseUrl = 'https://api.openweathermap.org/data/2.5/forecast';
+
 
 // Show/hide the clear button based on input value
 document.addEventListener("input", () => {
@@ -128,6 +130,12 @@ async function updateWeatherUI(city) {
     } finally {
         loadingElement.style.display = 'none'; // Hide loading spinner
     }
+
+    const forecastData = await fetchForecastData(city);
+    if (forecastData) {
+        const dailyForecasts = extractFiveDayForecast(forecastData);
+        displayForecastCards(dailyForecasts);
+    }
 }
 
 // Event listener for the search button click
@@ -157,3 +165,60 @@ searchInput.addEventListener("keydown", async (event) => {
         searchInput.focus(); // Refocus the input field
     }
 });
+// Function to fetch forecast data from the API
+async function fetchForecastData(city) {
+    try {
+        const response = await fetch(`${forecastBaseUrl}?q=${city}&appid=${apiKey}&units=metric`);
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('City not found');
+            } else {
+                throw new Error('Error fetching forecast data');
+            }
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching forecast data:', error);
+        alert('City not found. Please try again.');
+        return null;
+    }
+}
+
+// Function to extract the 5-day forecast
+   function extractFiveDayForecast(data) {
+    const forecasts = [];
+    const seenDates = new Set(); // To track unique dates
+ 
+    data.list.forEach(forecast => {
+        const forecastsDate = new Date(forecast.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        if (!seenDates.has(forecastsDate)) {
+            seenDates.add(forecastsDate);
+            forecasts.push(forecast); // Push the forecast data for the unique date
+        }
+    });
+    
+    return forecasts.slice(0, 5); // Return only 5 days
+}
+// Function to update the forecast UI
+function displayForecastCards (forecasts) {
+    const forecastContainer = document.getElementById('forecast-container');
+    forecastContainer.innerHTML = ''; // Clear previous forecast cards
+
+    forecasts.forEach(day => {
+        const date = new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const icon = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`  
+        const temperature = `${Math.round(day.main.temp)}°C`;
+        const desc = day.weather[0].description;
+
+        const card = document.createElement('div');
+        card.classList.add('forecast-card');
+        card.innerHTML = `
+            <p>${date}</p>
+            <img src="${icon}" alt="${desc}" title="${desc}" />
+            <p>${temperature}</p>
+            <p style="text-transform:capitalize;">${desc}</p>
+        `;
+        forecastContainer.appendChild(card);
+    });
+}
