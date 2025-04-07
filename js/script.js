@@ -87,6 +87,30 @@ async function fetchWeatherData(city) {
         return null;
     }
 }
+let originalTempCelsius = null;
+let isCelsius = true; // Flag to check if the temperature is in Celsius
+
+// Function to convert temperature to Fahrenheit
+  function convertToFahrenheit(celsius) {
+    return (celsius * 9/5) + 32;
+  }
+// Function to update the temperature display
+function updateTemperatureDisplay(temp) {
+    if (isCelsius) {
+        temperature.textContent = `${Math.round(temp)}°C`;
+    } else {
+        const fahrenheit = convertToFahrenheit(temp);
+        temperature.textContent = `${Math.round(fahrenheit)}°F`;
+    }
+}
+// Event listener for the unit toggle button
+document.getElementById('unit-toggle').addEventListener('click', () => {
+    if (originalTempCelsius !== null) {
+        isCelsius = !isCelsius;
+        this.textContent = isCelsius ? "°C" : "°F";
+        updateTemperatureDisplay(originalTempCelsius);
+    }
+})
 // Function to update the UI when the user inputs a city, and populate the weather information
 async function updateWeatherUI(city) {
     loadingElement.style.display = 'block'; // Show loading spinner
@@ -101,7 +125,8 @@ async function updateWeatherUI(city) {
             locationName.textContent = weatherData.name;
     
             // Update the temperature
-            temperature.textContent = `${Math.round(weatherData.main.temp)}°C`;
+            originalTempCelsius = weatherData.main.temp;
+            updateTemperatureDisplay(originalTempCelsius); // Update the temperature display
     
             // Update the weather condition
             weatherCondition.textContent = weatherData.weather[0].description;
@@ -117,7 +142,7 @@ async function updateWeatherUI(city) {
             const { lat, lon } = weatherData.coord;
             const hourlyData = await getHourlyForecast(lat, lon);
             displayHourlyForecast(hourlyData);
-            
+
             // fetch and display weather alerts
             const alerts = weatherData.alerts || []; // Use empty array if no alerts
             displayWeatherAlert(alerts);
