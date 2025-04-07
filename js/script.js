@@ -69,6 +69,7 @@ const baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
 
 // Function to fetch weather data from the API
 async function fetchWeatherData(city) {
+
     try {
         const response = await fetch(`${baseUrl}?q=${city}&appid=${apiKey}&units=metric`);
         if (!response.ok) {
@@ -116,6 +117,13 @@ async function updateWeatherUI(city) {
             const { lat, lon } = weatherData.coord;
             const hourlyData = await getHourlyForecast(lat, lon);
             displayHourlyForecast(hourlyData);
+            
+            // fetch and display weather alerts
+            const alerts = weatherData.alerts || []; // Use empty array if no alerts
+            displayWeatherAlert(alerts);
+
+            // Fetch and display AQI data
+            fetchAQIData(lat, lon);
 
             // Only stop loop on first search
             if (!hasSearched) {
@@ -291,4 +299,39 @@ function displayWeatherAlert(alerts) {
     });
 
     alertContent.appendChild(fragment); // Append all alert cards at once
+}
+// Function for AQI data
+async function fetchAQIData(lat, lon) {
+    const apiKey = 'c4e0dcbdc408a1aee90230a4eed14c00';
+    const  url = `https://api.openweathermap.org/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        displayAQI(data.list[0]); // Pass the AQI value to the display function
+    } catch (error) {
+        console.error('Error fetching AQI data:', error);
+        alert('Error fetching AQI data. Please try again later.');
+    }
+}
+
+// Function to display AQI data
+function displayAQI(aqiData) {
+    const aqiLevel = aqiData.main.aqi;
+    const aqiText = document.getElementById('aqi-value');
+    const aqiDesc = document.getElementById('aqi-description');
+
+    if (!aqiText || !aqiDesc) return;
+
+    const aqiDescription = {
+        1: "Good 🟢 - Air quality is satisfactory.",
+        2: "Fair 🟡 - Acceptable air quality.",
+        3: "Moderate 🟠 - May pose risk for sensitive people.",
+        4: "Poor 🔴 - Risk for general population.",
+        5: "Very Poor 🟣 - Health warnings of emergency conditions."
+    };
+
+    aqiText.textContent = `AQI Level: ${aqiLevel}`;
+    aqiDesc.textContent = aqiDescription[aqiLevel] || "No data available.";
+    aqiDesc.style.textTransform = "capitalize"; // Capitalize the description
 }
