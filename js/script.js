@@ -260,3 +260,35 @@ async function getHourlyForecast(lat, lon) {
         hourlyForecastContainer.appendChild(card);
     })
 }
+
+function displayWeatherAlert(alerts) {
+    const alertCon = document.getElementById('alert-container');
+    const alertContent = document.getElementById('alert-content');
+
+    alertContent.innerHTML = ''; // Clear only the alert content, not the entire container
+
+    if (!alerts || alerts.length === 0) {
+        alertCon.style.display = 'none'; // Hide the entire section if no alerts
+        return;
+    }
+
+    alertCon.style.display = 'block'; // Show alert container when alerts exist
+
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+
+    alerts.forEach(alert => {
+        const alertCard = document.createElement('div');
+        alertCard.classList.add('alert-card');
+
+        alertCard.innerHTML = `
+            <h3>${alert.event}</h3>
+            <p>${alert.description}</p>
+            <p>Start: ${new Date(alert.start * 1000).toLocaleString()}</p>
+            <p>End: ${new Date(alert.end * 1000).toLocaleString()}</p>
+        `;
+        fragment.appendChild(alertCard);
+    });
+
+    alertContent.appendChild(fragment); // Append all alert cards at once
+}
