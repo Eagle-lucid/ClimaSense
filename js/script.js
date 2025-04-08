@@ -104,7 +104,7 @@ function updateTemperatureDisplay(temp) {
     }
 }
 // Event listener for the unit toggle button
-document.getElementById('unit-toggle').addEventListener('click', () => {
+document.getElementById('unit-toggle').addEventListener('click', function () {
     if (originalTempCelsius !== null) {
         isCelsius = !isCelsius;
         this.textContent = isCelsius ? "°C" : "°F";
