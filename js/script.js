@@ -42,6 +42,7 @@ const weatherCondition = document.getElementById('weather-condition');
 const weatherIcon = document.getElementById('weather-icon');
 const loadingElement = document.getElementById('loading');
 const forecastBaseUrl = 'https://api.openweathermap.org/data/2.5/forecast';
+const gridLayout = document.querySelector('.grid-layout');
 
 
 // Show/hide the clear button based on input value
@@ -156,6 +157,8 @@ async function updateWeatherUI(city) {
                 stopLoopAndSetWeatherBG(season); // Stop the looping background and set the weather background
                 hasSearched = true; // Set the flag to true after the first search
             }
+             // **Toggle the Layout After Search**
+             toggleLayoutOnSearch(); 
         }
     }  catch (error) {
         console.error('Error updating weather UI:', error);
@@ -244,7 +247,11 @@ function displayForecastCards (forecasts) {
     forecastContainer.innerHTML = ''; // Clear previous forecast cards
 
     forecasts.forEach(day => {
-        const date = new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const date = new Date(day.dt * 1000).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+        });
         const icon = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`  
         const temperature = `${Math.round(day.main.temp)}°C`;
         const desc = day.weather[0].description;
@@ -253,9 +260,9 @@ function displayForecastCards (forecasts) {
         card.classList.add('forecast-card');
         card.innerHTML = `
             <p>${date}</p>
-            <img src="${icon}" alt="${desc}" title="${desc}" />
-            <p>${temperature}</p>
-            <p style="text-transform:capitalize;">${desc}</p>
+            <img src="${icon}" alt="${desc}" title="${desc}"  class="forecast-icon"/>
+            <p class="forecast-temp">${temperature}</p>
+            <p class="forecast-desc" style="text-transform:capitalize;">${desc.charAt(0).toUpperCase() + desc.slice(1)}</p>
         `;
         forecastContainer.appendChild(card);
     });
@@ -359,4 +366,19 @@ function displayAQI(aqiData) {
     aqiText.textContent = `AQI Level: ${aqiLevel}`;
     aqiDesc.textContent = aqiDescription[aqiLevel] || "No data available.";
     aqiDesc.style.textTransform = "capitalize"; // Capitalize the description
+}
+// Function to toggle layout on search (hides and shows grid-layout and postSearch-layout)
+function toggleLayoutOnSearch() {
+    const gridLayout = document.querySelector('.grid-layout');
+    const postSearchLayout = document.querySelector('.postSearch-layout');
+    
+    if (hasSearched) {
+        // Hide grid layout and show postSearch layout
+       gridLayout.classList.remove('post-search-active');
+       postSearchLayout.classList.add('show')
+    } else {
+        // Keep grid layout visible and hide postSearch layout
+        gridLayout.classList.add('post-search-active');
+        postSearchLayout.classList.remove('show');
+    }
 }
