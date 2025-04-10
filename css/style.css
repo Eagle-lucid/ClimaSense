@@ -379,3 +379,61 @@ main .forecast .forecast-cards {
     font-size: 1.2rem;
     color: hsl(0, 0%, 20%);
 }
+main #hourly-forecast-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--small-space);
+    padding: var(--small-space);
+    overflow: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    max-height: 300px; 
+}
+/* Individual Hourly Forecast Card */
+#hourly-forecast-container .hourly-card {
+    background: linear-gradient(135deg, hsl(40, 100%, 60%), hsl(15, 100%, 80%));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--small-space);
+    text-align: center;
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInLeft 0.6s ease forwards;
+    animation-delay: calc(var(--i) * 0.2s);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    scroll-snap-align: center;
+}
+/* Hover Effect for Hourly Forecast Card */
+#hourly-forecast-container .hourly-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 12px hsla(197, 83%, 65%, 0.3);
+}
+/* Hourly Forecast Card Elements */
+#hourly-forecast-container .hourly-card .hourly-time {
+    font-size: var(--font-size-base);
+    font-family: var(--header-font);
+    font-weight: 600;
+    color: hsl(0, 0%, 40%);
+}
+#hourly-forecast-container .hourly-card .hourly-icon {
+    width: 45px;
+    height: 45px;
+    margin: var(--small-space);
+}
+#hourly-forecast-container .hourly-card .hourly-temp {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: hsl(0, 0%, 20%);
+}
+/* Slide-in animation for Hourly Forecast */
+@keyframes slideInLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
