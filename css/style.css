@@ -273,6 +273,10 @@ main .weather-display .unit-btn-toggle:hover {
     color: rgb(255, 255, 255);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
+.postSearch-layout {
+    display: none;
+}
+/* Grid layout for the pre-search state (columns) */
 main .grid-layout {
     display: grid;
     justify-content: center;
@@ -281,16 +285,30 @@ main .grid-layout {
     gap: var(--medium-space);
     margin: 0 auto;
     max-width: 1200px;
-} 
+    transition: grid-template-columns 0.5s ease, grid-template-rows 0.5s ease;
+}
+/* Post-search layout (1 column, 4 rows) */
+.grid-layout.post-search-active {
+    grid-template-columns: 1fr; /* Single column */
+    grid-template-rows: repeat(4, 1fr); /* 4 rows */  
+}
+
+/* Additional helper class to make it visible */
+.postSearch-layout.show {
+    display: block;
+}
 .grid-layout section {
-    background: var(--card-bg, #ffffff);
+    background: var(--card-bg, hsl(0, 0%, 100%));
     border-radius: 1rem;
     padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     box-sizing: border-box;
     cursor: pointer;
-  }
+}
+.postSearch-layout.show section {
+    margin-bottom: var(--small-space);
+}
 .grid-layout section h3 {
     font-family: var(--header-font);
     font-size: 1.5rem;
@@ -304,8 +322,4 @@ main .grid-layout {
     align-items: center;
     justify-content: center;
     min-height: 100px;
-}
-main .grid-layout .air-quality .air-quality-info {
-    text-align: center;
-    margin-top: 1rem;
 }
