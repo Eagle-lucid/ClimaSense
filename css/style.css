@@ -241,8 +241,8 @@ main .weather-display h2 {
     letter-spacing: 5px;
 }
 main .weather-display .weather-info #weather-icon {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     margin: var(--medium-space);
     animation: iconTransition 0.5s ease-out;
 }
@@ -298,7 +298,7 @@ main .grid-layout {
     display: block;
 }
 .grid-layout section {
-    background: var(--card-bg, hsl(0, 0%, 100%));
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 240, 0.9));
     border-radius: 1rem;
     padding: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -322,4 +322,60 @@ main .grid-layout {
     align-items: center;
     justify-content: center;
     min-height: 100px;
+}
+/* Layout for Forecast Cards */
+main .forecast .forecast-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--medium-space);
+    padding: var(--small-space);
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 0.6s ease forwards;
+}
+.forecast-cards .forecast-card {
+    background: linear-gradient(135deg, hsl(197, 83%, 65%), hsl(206, 30%, 95%));
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--small-space);
+    text-align: center;
+    opacity: 0;
+    transform: translateX(50px);
+    animation: slideInRight 0.6s ease forwards;
+    animation-delay: calc(var(--i) * 0.2s);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+@keyframes slideInRight {
+    0% {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.forecast .forecast-cards .forecast-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 12px hsla(197, 83%, 65%, 0.3);
+}
+.forecast-cards .forecast-card .forecast-temp {
+    font-size: 1.4rem;
+    font-family: var(--header-font);
+    font-weight: bold;
+    color: hsl(0, 0%, 20%);
+}
+.forecast-cards .forecast-card .forecast-date {
+    font-size: 1.2rem;
+    color: hsl(0, 0%, 40%);
+}
+.forecast-cards .forecast-card .forecast-icon {
+    width: 60px;
+    height: 60px;
+    margin: var(--medium-space);
+}
+.forecast-cards .forecast-card .forecast-condition {
+    font-size: 1.2rem;
+    color: hsl(0, 0%, 20%);
 }
