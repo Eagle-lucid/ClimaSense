@@ -246,7 +246,7 @@ function displayForecastCards (forecasts) {
     const forecastContainer = document.getElementById('forecast-container');
     forecastContainer.innerHTML = ''; // Clear previous forecast cards
 
-    forecasts.forEach(day => {
+    forecasts.forEach((day, index) => {
         const date = new Date(day.dt * 1000).toLocaleDateString('en-US', { 
             weekday: 'long', 
             month: 'long', 
@@ -258,6 +258,8 @@ function displayForecastCards (forecasts) {
 
         const card = document.createElement('div');
         card.classList.add('forecast-card');
+        card.style.setProperty('--i', index);
+
         card.innerHTML = `
             <p>${date}</p>
             <img src="${icon}" alt="${desc}" title="${desc}"  class="forecast-icon"/>
