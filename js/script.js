@@ -261,7 +261,7 @@ function displayForecastCards (forecasts) {
         card.style.setProperty('--i', index);
 
         card.innerHTML = `
-            <p>${date}</p>
+            <p class="forecast-date">${date}</p>
             <img src="${icon}" alt="${desc}" title="${desc}"  class="forecast-icon"/>
             <p class="forecast-temp">${temperature}</p>
             <p class="forecast-desc" style="text-transform:capitalize;">${desc.charAt(0).toUpperCase() + desc.slice(1)}</p>
@@ -285,7 +285,7 @@ async function getHourlyForecast(lat, lon) {
     const hourlyForecastContainer = document.getElementById('hourly-forecast-container');
     hourlyForecastContainer.innerHTML = ''; // Clear previous hourly forecast
 
-    hourlyData.forEach(hour => {
+    hourlyData.forEach((hour, index) => {
         const time = new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const temperature = `${Math.round(hour.main.temp)}°C`;
         const icon = hour.weather[0].icon;
@@ -293,11 +293,12 @@ async function getHourlyForecast(lat, lon) {
 
         const card = document.createElement('div');
         card.classList.add('hourly-card');
+        card.style.setProperty('--i', index);
 
         card.innerHTML = `
-        <p>${time}</p>
-        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" title="${desc}" />
-        <p>${temperature}</p>
+        <p class="hourly-time">${time}</p>
+        <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" title="${desc}" class="hourly-icon" />
+        <p class="hourly-temp">${temperature}</p>
         `;
         hourlyForecastContainer.appendChild(card);
     })
