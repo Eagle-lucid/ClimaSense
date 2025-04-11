@@ -320,21 +320,41 @@ function displayWeatherAlert(alerts) {
     // Use DocumentFragment for better performance
     const fragment = document.createDocumentFragment();
 
-    alerts.forEach(alert => {
+    alerts.forEach((alert, index) => {
         const alertCard = document.createElement('div');
         alertCard.classList.add('alert-card');
+        
+         // Determine severity class
+         const severity = (alert.event || '').toLowerCase();
+         if (severity.includes('warning')) alertCard.classList.add('alert-warning');
+         else if (severity.includes('watch')) alertCard.classList.add('alert-watch');
+         else alertCard.classList.add('alert-advisory');
+
+          // Add bounce animation delay
+        alertCard.style.animationDelay = `${index * 0.2}s`;
 
         alertCard.innerHTML = `
+        <button class="alert-close-btn" aria-label="Close Alert">&times;</button>
             <h3>${alert.event}</h3>
             <p>${alert.description}</p>
-            <p>Start: ${new Date(alert.start * 1000).toLocaleString()}</p>
-            <p>End: ${new Date(alert.end * 1000).toLocaleString()}</p>
+            <p><strong>Start:</strong> ${new Date(alert.start * 1000).toLocaleString()}</p>
+            <p><strong>End:</strong> ${new Date(alert.end * 1000).toLocaleString()}</p>
         `;
+
+         // Add dismiss logic
+        alertCard.querySelector('.alert-close-btn').addEventListener('click', () => {
+            alertCard.remove();
+
+            if (!alertContent.hasChildNodes()) {
+                alertCon.style.display = 'none'; // Hide the entire section if no alerts remain
+            }
+        });
         fragment.appendChild(alertCard);
     });
 
     alertContent.appendChild(fragment); // Append all alert cards at once
 }
+
 // Function for AQI data
 async function fetchAQIData(lat, lon) {
     const apiKey = 'c4e0dcbdc408a1aee90230a4eed14c00';
