@@ -437,3 +437,60 @@ main #hourly-forecast-container {
         transform: translateX(0);
     }
 }
+#alert-container {
+    padding: var(--medium-space);
+    border-radius: 16px;
+    animation: fadeIn 0.6s ease forwards;
+}
+
+#alert-header h3 {
+    font-size: 1.6rem;
+    margin-bottom: var(--small-space);
+}
+
+.alert-card {
+    background: hsl(0, 0%, 100%);
+    padding: var(--small-space);
+    border-radius: 10px;
+    margin-bottom: var(--small-space);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    animation: bounceIn 0.6s ease forwards;
+    position: relative;
+}
+
+/* Severity-based backgrounds */
+.alert-warning {
+    background: hsl(0, 100%, 90%);
+    border-left: 6px solid hsl(0, 80%, 50%);
+}
+.alert-watch {
+    background: hsl(40, 100%, 90%);
+    border-left: 6px solid hsl(40, 90%, 50%);
+}
+.alert-advisory {
+    background: hsl(210, 100%, 95%);
+    border-left: 6px solid hsl(210, 90%, 50%);
+}
+
+/* Close Button */
+.alert-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    color: #444;
+    cursor: pointer;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes bounceIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    60% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); }
+}
