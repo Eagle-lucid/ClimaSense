@@ -375,6 +375,7 @@ function displayAQI(aqiData) {
     const aqiLevel = aqiData.main.aqi;
     const aqiText = document.getElementById('aqi-value');
     const aqiDesc = document.getElementById('aqi-description');
+    const aqiSection = document.querySelector('.air-quality');
 
     if (!aqiText || !aqiDesc) return;
 
@@ -388,6 +389,15 @@ function displayAQI(aqiData) {
 
     aqiText.textContent = `AQI Level: ${aqiLevel}`;
     aqiDesc.textContent = aqiDescription[aqiLevel] || "No data available.";
+// BG color based on AQI level
+     const bgColors = {
+        1: 'hsl(120, 88.60%, 75.90%)',  // Green - Good
+        2: 'hsl(39, 94.60%, 78.20%)',  // Yellow/Orange - Fair
+        3: 'hsl(30, 90.60%, 70.80%)',  // Orange - Moderate
+        4: 'hsl(0, 98.40%, 50.20%)',   // Red - Poor
+        5: 'hsl(280, 91.80%, 66.70%)'  // Purple - Very Poor
+    };
+    aqiSection.style.backgroundColor = bgColors[aqiLevel] || 'hsl(0, 0%, 95%)';
     aqiDesc.style.textTransform = "capitalize"; // Capitalize the description
 }
 // Function to toggle layout on search (hides and shows grid-layout and postSearch-layout)
