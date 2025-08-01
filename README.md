@@ -1,64 +1,140 @@
-ClimaSense
+# ClimaSense 🌦️✨
 
-ClimaSense is a sleek and interactive weather app that provides real-time weather updates, a 7-day forecast, and a dynamic UI experience. Designed with a user-friendly interface, ClimaSense ensures a seamless and engaging experience while delivering accurate weather information.
+_A Weather Companion That Feels Alive_
 
-Features
+![ClimaSense Demo](assets/images/demo.gif) <!-- Add demo later -->
 
-🌦 Live Weather Updates – Get real-time weather data for any location.
+---
 
-🌍 5-Day Forecast – View detailed weather predictions for the next week.
+### 🌤️ Your Weather — With Emotion, Personality, and Precision
 
-🎨 Dynamic Backgrounds – Seasonal background images that change in a loop.
+**ClimaSense** isn't your typical weather app. It’s a thoughtfully crafted, interactive weather companion that blends accurate forecasting with expressive UI and conversational tone. Designed to feel alive — like a buddy that talks weather with you.
 
-🔄 Temperature Unit Toggle – Switch between Celsius (°C) and Fahrenheit (°F).
+Whether it's rain, heat, or a cool breeze — the app reflects mood, season, and experience through animations, dynamic cards, and minimal yet intentional design.
 
-⚠️ Weather Alerts – Notifications for extreme weather conditions.
+---
 
-🍃 Air Quality Index (AQI) – Displays pollution levels for informed outdoor planning.
+## 🔧 Current Feature Set (Phase 1)
 
-Phase 1 Features
-The current version (Phase 1) includes the following features:
+| Feature               | Description                                                    |
+| --------------------- | -------------------------------------------------------------- |
+| **Live Weather**      | Real-time weather based on geolocation                         |
+| **7-Day Forecast**    | Interactive forecast cards for upcoming days                   |
+| **Dynamic UI**        | Backgrounds change with season/weather. Animated hero sections |
+| **Air Quality (AQI)** | Shows pollution level with meaningful icon and context         |
+| **Weather Alerts**    | Highlighted warnings for extreme conditions                    |
+| **Temp Unit Toggle**  | Switch between °C and °F instantly                             |
 
-Real-time weather data for any searched location.
+---
 
-7-day weather forecast with interactive weather icons and details.
+## 🚧 Next Phase Roadmap
 
-Dynamic background images based on the current weather conditions.
+- 🕐 Hourly forecast toggle & animations
+- 🌧️ Micro-interactions (raindrops, wind pulse, etc.)
+- 📊 Advanced metrics: UV index, humidity, wind graphs
+- 🧠 AI-Integrated Conversational Forecasts _(future goal)_
 
-Air Quality Index (AQI) with color-coded background to indicate pollution levels (Good, Moderate, Poor, etc.).
+---
 
-Weather Alerts for extreme weather conditions like storms, heatwaves, and snow.
+## 🛠️ Tech Stack
 
-Toggle between Celsius (°C) and Fahrenheit (°F) temperature units.
+| Layer         | Stack                                                           |
+| ------------- | --------------------------------------------------------------- |
+| **Frontend**  | React (with Vite), SCSS, Bootstrap Utility Classes              |
+| **Styling**   | Modular SCSS Architecture (abstracts, layout, base, components) |
+| **Data/API**  | OpenWeatherMap API (Weather & AQI), Browser Geolocation         |
+| **Utilities** | Custom React Hooks, Context API, Utility Helpers                |
+| **Tooling**   | Git, GitHub, Prettier, ESLint, Node.js ≥18                      |
 
-Tech Stack
+---
 
-Frontend: HTML, CSS, JavaScript (Vanilla JS)
+## ⚡ Getting Started
 
-API: REST API (Weather API for real-time data)
-
-Version Control: Git & GitHub
-
-How to Run Locally
-
-To run ClimaSense on your local machine, follow these steps:
-
+```bash
 git clone git@github.com:Eagle-lucid/ClimaSense.git
 cd ClimaSense
-open index.html # Or use Live Server
+npm install
+npm run dev
+Requires: Node.js ≥18
+Live Preview: https://climasense.app (coming soon)
 
-Phase 2 (Coming Soon)
-In Phase 2, we plan to add the following features:
+🎨 Design Philosophy
+Minimal but Human: Less color clutter, more natural tones
 
-Toggle between 5-Day Forecast and Hourly Forecast: A toggle button to allow users to switch between viewing the 5-day weather forecast and hourly weather updates.
+Primary Palette:
 
-Refinement of UI/UX: Further enhancements to the user interface and experience to make it even more intuitive and engaging.
+Green #2e7d32 – Primary / Brand Color
 
-Advanced Weather Analytics: Including more granular details such as wind speed, humidity, and UV index.
-Contributing
+Golden-Green #a0d468 – Accent / Emphasis
 
-Contributions are welcome! Feel free to fork the repository and submit pull requests.
+Gray #f0f0f0 – Background / Section
 
-License
+Blue – for highlights
 
-This project is licensed under the MIT License.
+Red – used only for alerts (danger, warnings)
+
+Typography: Clean, accessible, not over-stylized
+
+Component Behavior:
+
+Cards animate on interaction
+
+Hero section updates conversationally
+
+Modal popout with full-day details (blur background, cancellable)
+
+🤝 Contributing
+bash
+Copy
+Edit
+# Fork → Clone → Branch → Commit → Push → PR
+Fork the repo
+
+Create your branch: git checkout -b feat/your-feature
+
+Commit your changes: git commit -m "feat: add new weather card"
+
+Push to the branch: git push origin feat/your-feature
+
+Open a Pull Request
+
+📁 Docs
+Explore project documentation in /docs:
+
+ARCHITECTURE.md – folder structure, component strategy
+
+API_REFERENCE.md – endpoints, params, and responses
+
+COLORS.md – full palette with use-cases and design notes
+
+📜 License
+MIT © Lucid the Eagle
+Crafted with intention. Designed for learning. Built to grow.
+
+yaml
+Copy
+Edit
+
+---
+
+### ✅ What's Been Enhanced
+
+| Area                 | How it's improved                                                                 |
+|----------------------|-----------------------------------------------------------------------------------|
+| **Professional Tone**| Friendly but serious enough for resumes, MVPs, or freelance project showcases     |
+| **Tech Clarity**     | Clear separation of stacks, tooling, and architectural intent                     |
+| **Scannability**     | Tables, dividers, and icons for faster navigation                                 |
+| **Personalization**  | Reflects your unique dev style: interactive, animated, no-template, well-planned |
+
+---
+
+### Optional Next Additions
+Let me know if you'd like:
+
+- 🧪 `tests/` + a `TESTING.md` starter
+- 🗂 A `/public` asset guide
+- 🌐 `DEPLOYMENT.md` guide for Vercel or Netlify
+- 📝 `CHANGELOG.md` for tracking progress over time
+
+Just say the word and I’ll scaffold any of them for you.
+```
