@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClimaSense-app</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>ClimaSense</h1>
+        <div class="searchbar">
+            <div class="input-wrapper">
+                <input type="search" id="search-input" placeholder="Search for a city...">
+                <button id="clear-btn">
+                    <img src="assets/icons/xmark.svg" alt="clear">
+                </button>
+            </div>
+            <button id="search-button">
+                <img src="assets/icons/arrow-right-solid.svg" alt="Search">
+            </button>
+        </div>
+    </header>
+    <!-- Main content -->
+     <main>
+        <section class="weather-display">
+            <!-- Loading Indicator -->
+            <div id="loading">Loading...</div>
+            <h2 id="location-name">Location</h2>
+            <div class="weather-info">
+                <!-- Placeholder icon for weather -->
+                <img src="assets/icons/cloud-solid.svg" alt="Cloudy weather icon" id="weather-icon">
+                <p id="temperature">--°C</p>
+                <p id="weather-condition">Condition</p>
+            </div>
+            <button id="unit-toggle" class="unit-btn-toggle">°C / °F</button>
+        </section>
+
+      <div class="grid-layout postSearch-layout">
+          <!-- 5 Forecast section -->
+          <section class="forecast">
+            <h3>5-Day Forecast</h3>
+            <div id="forecast-container" class="forecast-cards forecast-grid">
+                <!-- Forecast cards will be dynamically added -->
+            </div>
+         </section>
+
+        <!-- Hourly Forecast section -->
+            <section class="hourly-forecast section-animate slide-left">
+                <h3>Hourly Forecast</h3>
+                <div id="hourly-forecast-container" class="forecast-cards scroll-x">
+                    <!-- Hourly forecast data will be dynamically added -->
+                </div>
+            </section>
+
+        <!-- Weather Alerts -->
+            <section id="alert-container" class="weather-alerts section-animate pop-alert">
+                <div id="alert-header"> 
+                    <h3>Weather Alerts</h3>
+                </div>
+                <div id="alert-content"  aria-live="polite"></div> 
+            </section>    
+
+        <!-- Air Quality section -->
+            <section class="air-quality section-animate slide-up">
+                <h3>Air Quality Index (AQI)</h3>
+                <div class="air-quality-info">
+                    <p id="aqi-value">--</p>
+                    <p id="aqi-description">Loading...</p>
+                </div>
+            </section>
+      </div>
+     </main>
+    <script src="js/script.js"></script>
+</body>
+</html>
