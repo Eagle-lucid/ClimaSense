@@ -3,12 +3,25 @@ import { IconShare, IconBike, IconCar, IconHome } from '@tabler/icons-react';
 import './WeatherNarrator.scss';
 
 const WeatherNarrator = ({ weatherData, location }) => {
-  // Normalize weather condition (e.g., 'partly-cloudy' → 'cloudy')
+  // Safe default values for weather data
+  const safeWeatherData = {
+    temp: 0,
+    feelsLike: 0,
+    windSpeed: 0,
+    condition: '',
+    ...weatherData // Override with actual data if available
+  };
+
+  // Normalize weather condition with fallback
   const normalizeCondition = (condition) => {
     if (!condition) return 'default';
-    return condition.toLowerCase().includes('cloud') ? 'cloudy' 
-         : condition.toLowerCase().includes('rain') ? 'rainy'
-         : condition;
+    const lowerCondition = condition.toLowerCase();
+    return lowerCondition.includes('cloud') ? 'cloudy' 
+         : lowerCondition.includes('rain') ? 'rainy'
+         : lowerCondition.includes('snow') ? 'snowy'
+         : lowerCondition.includes('storm') ? 'stormy'
+         : lowerCondition.includes('sun') ? 'sunny'
+         : 'default';
   };
 
   // Time-based greeting
@@ -19,42 +32,43 @@ const WeatherNarrator = ({ weatherData, location }) => {
     return 'evening';
   };
 
-  // Weather narrative generator
+  // Weather narrative generator with null checks
   const generateNarrative = () => {
-    const { temp, feelsLike, windSpeed } = weatherData;
-    const condition = normalizeCondition(weatherData.condition);
+    const { temp, feelsLike, windSpeed, condition } = safeWeatherData;
+    const normalizedCondition = normalizeCondition(condition);
     const timeOfDay = getTimeOfDay();
     const userName = localStorage.getItem('userName') || 'friend';
 
     const narratives = {
-      sunny: `☀️ Good ${timeOfDay}, ${userName}. The sun is shining bright in ${location} at ${temp}°C. 
+      
+      sunny: `☀️ Good ${timeOfDay}, ${userName}. The sun is shining bright in ${location || 'your location'} at ${temp}°C. 
              ${feelsLike > temp ? `Feels like ${feelsLike}°C` : ''} 
              ${windSpeed > 15 ? 'with refreshing breezes.' : 'with calm skies.'}`,
       
       rainy: `🌧️ Good ${timeOfDay}, ${userName}. ${timeOfDay === 'morning' ? 'Pack that umbrella!' : 'Rain continues'} 
-              in ${location} at ${temp}°C. 
+              in ${location || 'your location'} at ${temp}°C. 
               ${feelsLike < temp ? `Feels ${feelsLike}°C` : ''} 
               ${windSpeed > 10 ? 'with gusty winds.' : 'with steady showers.'}`,
 
-      cloudy: `☁️ Good ${timeOfDay}, ${userName}. Skies are overcast in ${location} at ${temp}°C. 
+      cloudy: `☁️ Good ${timeOfDay}, ${userName}. Skies are overcast in ${location || 'your location'} at ${temp}°C. 
                Perfect for ${timeOfDay === 'morning' ? 'a cozy breakfast' : 'indoor activities'}.`,
 
-      snowy: `❄️ Good ${timeOfDay}, ${userName}. Snowfall in ${location} at ${temp}°C. 
+      snowy: `❄️ Good ${timeOfDay}, ${userName}. Snowfall in ${location || 'your location'} at ${temp}°C. 
               Bundle up - feels like ${feelsLike}°C with ${windSpeed}km/h winds.`,
 
       stormy: `⚡ Storm alert, ${userName}! ${timeOfDay === 'evening' ? 'Stay indoors' : 'Be cautious'} 
-               in ${location}. ${temp}°C with heavy winds.`,
+               in ${location || 'your location'}. ${temp}°C with heavy winds.`,
                
-      default: `🌤️ ${temp}°C and ${weatherData.condition} in ${location}`
+      default: `🌤️ ${temp}°C and ${condition || 'unknown conditions'} in ${location || 'your location'}`
     };
 
-    return narratives[condition] || narratives.default;
+    return narratives[normalizedCondition] || narratives.default;
   };
 
-  // Lifestyle suggestions
+  // Lifestyle suggestions with fallbacks
   const getLifestyleTip = () => {
-    const condition = normalizeCondition(weatherData.condition);
-    const { temp } = weatherData;
+    const normalizedCondition = normalizeCondition(safeWeatherData.condition);
+    const { temp } = safeWeatherData;
     
     const tips = {
       sunny: temp > 25 
@@ -66,28 +80,43 @@ const WeatherNarrator = ({ weatherData, location }) => {
       default: 'Have a wonderful day!'
     };
 
-    return tips[condition] || tips.default;
+    return tips[normalizedCondition] || tips.default;
   };
 
-  //  Share functionality with error handling
+  // Share functionality with enhanced error handling
   const handleShare = async () => {
-    const narrative = generateNarrative();
     try {
+      const narrative = generateNarrative();
+      const shareData = {
+        title: `ClimaSense Weather for ${location || 'your location'}`,
+        text: narrative,
+        url: window.location.href
+      };
+
       if (navigator.share) {
-        await navigator.share({
-          title: `ClimaSense Weather for ${location}`,
-          text: narrative,
-          url: window.location.href
-        });
-      } else {
-        await navigator.clipboard.writeText(narrative);
+        await navigator.share(shareData);
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}`);
         alert('Weather details copied to clipboard!');
+      } else {
+        throw new Error('Sharing not supported');
       }
     } catch (err) {
       console.error('Share failed:', err);
-      alert('Could not share weather details');
+      alert('Could not share weather details. Try manually copying the text.');
     }
   };
+
+  // Early return if critical data is missing
+  if (!weatherData || !weatherData.condition) {
+    return (
+      <div className="narrator">
+        <div className="narrator__message">
+          <p className="narrator__text">Loading weather information...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="narrator">
