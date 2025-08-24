@@ -1,6 +1,5 @@
 // src/App.jsx
-import React from 'react';
-import { WeatherProvider } from './context/WeatherContext';
+import { WeatherProvider } from './context/WeatherContext.jsx';
 import Header from './components/header/Header';
 import Hero from './components/hero/Hero';
 import ForecastList from './components/forecast/ForecastList';
