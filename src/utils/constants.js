@@ -1,11 +1,13 @@
 /* ==== Constant Config ==== */
 
-// 🔐 API Key (loaded from .env for security)
-export const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+// 🔐 API Keys (loaded from .env for security)
+export const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;  // WeatherAPI.com
+export const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY; // OpenWeatherMap
 
-// 🌤️ OpenWeather API Base URLs
-export const WEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
-export const FORECAST_BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
+// 🌤️ WeatherAPI.com Base URL
+export const WEATHER_API_BASE_URL = 'https://api.weatherapi.com/v1';
+
+// 🌍 OpenWeatherMap AQI Base URL
 export const AQI_BASE_URL = 'https://api.openweathermap.org/data/2.5/air_pollution';
 
 // 🌙 Weather conditions that should trigger dark theme mode
