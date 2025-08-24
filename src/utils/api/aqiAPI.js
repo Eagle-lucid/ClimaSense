@@ -1,42 +1,26 @@
-// src/utils/aqi/aqiAPI.js
-import { OPENWEATHER_API_KEY, AQI_BASE_URL } from '../constants';
+// src/utils/api/aqiAPI.js
+import { WEATHER_API_KEY } from '../constants';
 
 /**
- * Fetches Air Quality Index (AQI) data from OpenWeather API
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
+ * Fetches Air Quality Index (AQI) data from WeatherAPI.com
  * @returns {Promise<object>} AQI data in JSON format
  */
-export async function fetchAQIData(lat, lon) {
+export async function fetchAQIData() {
   try {
-    //  Ensure API key exists
-    if (!OPENWEATHER_API_KEY) {
-      throw new Error('Missing API Key: Check your .env file for VITE_OPENWEATHER_API_KEY');
+    // Ensure API key exists
+    if (!WEATHER_API_KEY) {
+      throw new Error('Missing API Key: Check your .env file for VITE_WEATHER_API_KEY');
     }
 
-    //  Ensure coordinates are valid
-    if (typeof lat !== 'number' || typeof lon !== 'number') {
-      throw new Error('Invalid coordinates: Latitude and Longitude must be numbers');
-    }
-
-    const url = `${AQI_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}`;
-    const response = await fetch(url);
-
-    //  Handle failed responses
-    if (!response.ok) {
-      throw new Error(`AQI API Error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    //  Verify expected structure
-    if (!data || !data.list) {
-      throw new Error('Invalid AQI data structure from API');
-    }
-
-    return data;
+    // WeatherAPI.com provides AQI data in the same response as weather data
+    // This function is now a placeholder since AQI data is included in weather API response
+    return {
+      data: { aqi: null },
+      hourly: [],
+      daily: []
+    };
   } catch (error) {
     console.error('fetchAQIData failed:', error.message);
-    throw error; // rethrow so caller can handle gracefully
+    throw error;
   }
 }
