@@ -1,0 +1,395 @@
+// src/styles/abstracts/_mixins.scss
+// --------------------------------------------------
+// ClimaSense Sass Mixins
+// Reusable style patterns and utility mixins.
+// --------------------------------------------------
+
+@use './variables' as *;
+@use './functions' as *;
+@use 'sass:math';
+@use 'sass:map';
+@use 'sass:list';
+@use 'sass:meta';
+
+// RESPONSIVE MIXINS
+// --------------------------------------------------
+
+@mixin respond-to($breakpoint) {
+    $breakpoint-value: get-token($breakpoints, $breakpoint, 'respond-to(#{$breakpoint})');
+    @if $breakpoint-value {
+        @media (min-width: $breakpoint-value) {
+            @content;
+        }
+    } @else {
+        @warn 'No value found for breakpoint: #{$breakpoint}';
+        @content;
+    }
+}
+
+@mixin respond-down-to($breakpoint) {
+    $breakpoint-value: get-token($breakpoints, $breakpoint, 'respond-down-to(#{$breakpoint})');
+    @if $breakpoint-value {
+        @media (max-width: #{$breakpoint-value - 0.02px}) {
+            @content;
+        }
+    } @else {
+        @warn 'No value found for breakpoint: #{$breakpoint}';
+        @content;
+    }
+}
+
+@mixin respond-between($min, $max) {
+    $min-value: get-token($breakpoints, $min, 'respond-between(#{$min}, #{$max})');
+    $max-value: get-token($breakpoints, $max, 'respond-between(#{$min}, #{$max})');
+    @if $min-value and $max-value {
+        @media (min-width: $min-value) and (max-width: $max-value) {
+            @content;
+        }
+    } @else {
+        @warn 'No value found for breakpoints: #{$min} or #{$max}';
+        @content;
+    }
+}
+
+@mixin retina($ratio: 2) {
+  @media only screen and (-webkit-min-device-pixel-ratio: $ratio),
+         only screen and (min--moz-device-pixel-ratio: $ratio),
+         only screen and (-o-min-device-pixel-ratio: '#{$ratio}/1'),
+         only screen and (min-resolution: #{math.div($ratio, 1)}dppx),
+         only screen and (min-resolution: #{$ratio * 96}dpi) {
+    @content;
+  }
+}
+
+// LAYOUT & SPACING MIXINS
+// --------------------------------------------------
+
+@mixin aspect-ratio($width, $height) {
+    position: relative;
+    &::before {
+        content: '';
+        display: block;
+        padding-top: math.div($height, $width) * 100%;
+    }
+    > * {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+@mixin grid-container($gap-key: 3, $columns: auto-fit, $min-column-width: 200px, $max-column-width: 1fr) {
+    display: grid;
+    grid-template-columns: repeat($columns, minmax($min-column-width, $max-column-width));
+    grid-gap: get-token($spacers, $gap-key, 'grid-container(#{$gap-key})');
+}
+
+@mixin flex-container($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap, $gap-key: 0) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+    flex-wrap: $wrap;
+    @if $gap-key != 0 {
+        gap: get-token($spacers, $gap-key, 'flex-container(#{$gap-key})');
+    }
+}
+
+@mixin position($position, $coordinates: 0 0 0 0) {
+    $top: list.nth($coordinates, 1);
+    $right: list.nth($coordinates, 2);
+    $bottom: list.nth($coordinates, 3);
+    $left: list.nth($coordinates, 4);
+    
+    position: $position;
+    
+    @if $top != 0 { top: $top; }
+    @if $right != 0 { right: $right; }
+    @if $bottom != 0 { bottom: $bottom; }
+    @if $left != 0 { left: $left; }
+}
+
+// TYPOGRAPHY MIXINS
+// --------------------------------------------------
+
+@mixin text-truncate($lines: 1) {
+    @if $lines == 1 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    } @else if $lines > 1 {
+        display: -webkit-box;
+        -webkit-line-clamp: $lines;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+    } @else {
+        @warn 'Number of lines must be 1 or greater.';
+    }
+}
+
+@mixin font-smooth($style: antialiased) {
+    -webkit-font-smoothing: $style;
+    -moz-osx-font-smoothing: if($style == antialiased, grayscale, auto);
+    @content;
+}
+
+@mixin system-font($type: ui) {
+    $stacks: (
+        ui: (-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+             'Helvetica Neue', Arial, sans-serif),
+        text: (Georgia, serif),
+        code: (SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace),
+        mono: (Monaco, 'Lucida Console', monospace)
+    );
+    
+    @if not map.has-key($stacks, $type) {
+        @warn 'Font stack type "#{$type}" not found. Using "ui" as fallback.';
+        $type: ui;
+    }
+    
+    font-family: map.get($stacks, $type);
+}
+
+// VISUAL EFFECTS MIXINS
+// --------------------------------------------------
+
+@mixin box-shadow($level: elevation-1) {
+    $shadow-value: get-token($shadows, $level, 'box-shadow(#{$level})');
+    @if $shadow-value {
+        box-shadow: $shadow-value;
+    } @else {
+        @warn 'No value found for shadow level: #{$level}';
+    }
+} 
+
+@mixin focus($color-key: primary) {
+    $focus-color: get-token($colors, $color-key, 'focus(#{$color-key})');
+    outline: 2px solid $focus-color;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px alpha-color($focus-color, 0.3);
+    transition: outline-offset 0.2s ease, box-shadow 0.2s ease;
+    
+    &:focus {
+        outline-offset: 4px;
+        box-shadow: 0 0 0 4px alpha-color($focus-color, 0.5);
+    }
+    
+    &:focus:not(:focus-visible) {
+        outline: none;
+        box-shadow: none;
+    }
+}
+
+@mixin transition($property: all, $duration: normal, $easing: ease-in-out) {
+    $duration-value: get-token($transition-durations, $duration, 'transition(#{$duration})');
+    $easing-value: get-token($easings, $easing, 'transition(#{$easing})');
+    
+    @if not $duration-value {
+        @warn 'No value found for transition duration: #{$duration}. Using 0.3s as fallback.';
+        $duration-value: 0.3s;
+    }
+    
+    @if not $easing-value {
+        @warn 'No value found for easing: #{$easing}. Using ease-in-out as fallback.';
+        $easing-value: ease-in-out;
+    }
+    
+    transition: $property $duration-value $easing-value;
+}
+
+@mixin gradient-text($start-color, $end-color, $direction: to right) {
+    background: linear-gradient($direction, $start-color, $end-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+// COMPONENT-SPECIFIC MIXINS
+// --------------------------------------------------
+
+@mixin card($padding-key: 4, $shadow-level: elevation-1) {
+    background-color: theme(background, horizon);
+    border-radius: get-token($border-radius, md, 'card()');
+    padding: get-token($spacers, $padding-key, 'card(#{$padding-key})');
+    @include box-shadow($shadow-level);
+    @include transition(box-shadow, fast);
+    
+    &:hover {
+        @include box-shadow(elevation-2);
+    }
+    
+    &:focus-within {
+        @include focus(primary);
+    }
+}
+
+@mixin button-base(
+    $padding-y-key: 2,
+    $padding-x-key: 3,
+    $border-radius-key: md,
+    $bg-color-key: primary,
+    $text-color-key: neutral-white,
+    $hover-bg-color-key: info,
+    $disabled-bg-color-key: neutral-gray,
+    $disabled-text-color-key: neutral-black
+) {
+    appearance: none;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    
+    padding: get-token($spacers, $padding-y-key, 'button-base(#{$padding-y-key})') 
+             get-token($spacers, $padding-x-key, 'button-base(#{$padding-x-key})');
+    font-size: $font-size-base;
+    border-radius: get-token($border-radius, $border-radius-key, 'button-base(#{$border-radius-key})');
+    background-color: get-token($colors, $bg-color-key, 'button-base(#{$bg-color-key})');
+    color: get-token($colors, $text-color-key, 'button-base(#{$text-color-key})');
+    @include box-shadow(elevation-1);
+    @include transition(background-color, fast);
+    
+    &:hover {
+        background-color: get-token($colors, $hover-bg-color-key, 'button-base(#{$hover-bg-color-key})');
+        @include box-shadow(elevation-2);
+    }
+    
+    &:focus {
+        @include focus(primary);
+    }
+    
+    &:disabled {
+        background-color: get-token($colors, $disabled-bg-color-key, 'button-base(#{$disabled-bg-color-key})');
+        color: get-token($colors, $disabled-text-color-key, 'button-base(#{$disabled-text-color-key})');
+        cursor: not-allowed;
+        opacity: 0.6;
+        box-shadow: none;
+        
+        &:hover {
+            background-color: get-token($colors, $bg-color-key, 'button-base(#{$bg-color-key})');
+            @include box-shadow(elevation-1);
+        }
+        
+        &:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    }
+}
+
+@mixin weather-icon($size-key: md, $fill-type: fill) {
+    $size-value: get-token($icon-sizes, $size-key, 'weather-icon(#{$size-key})');
+    width: $size-value;
+    height: $size-value;
+    
+    @if $fill-type == fill {
+        fill: currentColor;
+        stroke: none;
+    } @else if $fill-type == stroke {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+    } @else {
+        @warn 'Invalid fill-type: #{$fill-type}. Use "fill" or "stroke".';
+    }
+}
+
+// UTILITY & HELPER MIXINS
+// --------------------------------------------------
+
+@mixin sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+@mixin sr-only-focusable {
+    @include sr-only();
+    
+    &:focus,
+    &:active {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        clip: auto !important;
+        white-space: normal !important;
+    }
+}
+
+@mixin clearfix {
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+}
+
+@mixin reduce-motion {
+    @media (prefers-reduced-motion: reduce) {
+        @content;
+    }
+}
+
+@mixin high-contrast {
+    @media (prefers-contrast: more) {
+        @content;
+    }
+}
+
+@mixin dark-mode {
+    @media (prefers-color-scheme: dark) {
+        @content;
+    }
+}
+
+@mixin light-mode {
+    @media (prefers-color-scheme: light) {
+        @content;
+    }
+}
+
+// DEBUGGING MIXINS
+// --------------------------------------------------   
+
+@mixin debug-outline($color: red, $thickness: 1px, $style: solid) {
+    outline: $thickness $style $color;
+
+    > * {
+        outline: $thickness $style lighten($color, 20%);
+    }
+}
+
+@mixin debug-breakpoints {
+    body::before {
+        background: #000;
+        color: #fff;
+        content: 'xs';
+        font-family: monospace;
+        padding: 0.5rem;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1000;
+        
+        @include respond-to(sm) { content: 'sm'; }
+        @include respond-to(md) { content: 'md'; }
+        @include respond-to(lg) { content: 'lg'; }
+        @include respond-to(xl) { content: 'xl'; }
+        @include respond-to(xxl) { content: 'xxl'; }
+    }
+}
