@@ -1,0 +1,164 @@
+// src/styles/abstracts/_functions.scss
+// ==================================================
+// ClimaSense Sass Functions
+// Programmatic utilities for accessing and manipulating design tokens.
+// ==================================================
+
+// Required module for these functions
+@use './variables' as *;
+@use 'sass:map';
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:meta';
+
+// THEME TOKEN ACCESSOR
+/// Gets a theme-specific token
+/// @param {String} $key - The theme token key (e.g., background, text-primary)
+/// @param {String} $mode - The theme mode (horizon or nightfall)
+/// @return {*} The value from the $themes map
+@function theme($key, $mode: horizon) {
+    $theme-map: get-token($themes, $mode, '$themes');
+    @return get-token($theme-map, $key, 'theme(#{$mode})');
+}
+
+// DESIGN TOKEN ACCESSOR FUNCTIONS
+// --------------------------------------------------
+@function get-token($map, $key, $map-name: 'map') {
+    @if not map.has-key($map, $key) {
+        @error 'Invalid `#{$key}` for `#{$map-name}`. Available keys: #{map.keys($map)}';
+    } 
+    @return map.get($map, $key);
+}
+
+@function space($key) {
+    @return get-token($spacers, $key, '$spacers');
+}
+
+@function radius($key) {
+    @return get-token($border-radius, $key, '$border-radius');
+}
+
+@function weight($key) {
+    @return get-token($font-weights, $key, '$font-weights');
+}
+
+@function shadow($key) {
+    @return get-token($shadows, $key, '$shadows');
+}
+
+@function z($key) {
+    @return get-token($z-indices, $key, '$z-indices');
+}
+
+// COLOR FUNCTIONS (refined)
+// --------------------------------------------------
+@function is-light($color) {
+    @return math.div(red($color) * 0.299 + green($color) * 0.587 + blue($color) * 0.114, 255) > 0.6;
+}
+
+@function contrast-color($color) {
+    @return if(is-light($color), #000, #fff);
+}
+
+/// Creates a transparent version of a color using alpha (0-1)
+@function alpha-color($color, $alpha) {
+    @if $alpha < 0 or $alpha > 1 {
+        @error 'Alpha value must be between 0 and 1.';
+    }
+    @return rgba($color, $alpha);
+}
+
+/// Creates a transparent version of a color using percentage (0-100)
+@function set-opacity($color, $percentage) {
+    @if $percentage < 0 or $percentage > 100 {
+        @error 'Percentage value must be between 0 and 100.';
+    }
+    @return alpha-color($color, math.div($percentage, 100));
+}
+
+// MATH & UNIT CONVERSION FUNCTIONS
+// --------------------------------------------------
+@function to-rem($value, $base: 16px) {
+    @if math.unit($value) == 'rem' { @return $value; }
+    @if math.unit($base) != 'px' {
+        @error 'Base font size must be in px units';
+    }
+    @return math.div(strip-unit($value), strip-unit($base)) * 1rem;
+}
+
+@function to-em($value, $context: 16px) {
+    @if math.unit($value) == 'em' { @return $value; }
+    @if math.unit($context) != 'px' {
+        @error 'Context size must be in px units';
+    }
+    @return math.div(strip-unit($value), strip-unit($context)) * 1em;
+}
+
+@function strip-unit($value) {
+    @if meta.type-of($value) == 'number' and not math.is-unitless($value) {
+        @return math.div($value, $value * 0 + 1);
+    }
+    @return $value;
+}
+
+// RESPONSIVE DESIGN FUNCTIONS
+// --------------------------------------------------
+@function breakpoint($name) {
+    @return get-token($breakpoints, $name, '$breakpoints');
+}
+
+@function min-breakpoint($name) {
+    $value: breakpoint($name);
+    @return '(min-width: #{$value})';
+}
+
+@function max-breakpoint($name) {
+    $value: breakpoint($name);
+    @return '(max-width: #{$value - 0.02px})'; // Prevents overlap
+}
+
+// TYPE SCALE FUNCTIONS 
+// --------------------------------------------------
+@function mod-scale($step, $base: 1rem, $ratio: 1.25) {
+    @if not math.is-unitless($step) {
+        @error '`$step` must be a unitless number.';
+    }
+    @if $ratio <= 1 {
+        @error '`$ratio` must be a number greater than 1.';
+    }
+    @return $base * math.pow($ratio, $step);
+}
+
+// LAYOUT & SPACING FUNCTIONS
+// --------------------------------------------------
+@function grid-width($columns, $column-width, $gutter-width) {
+    @return ($columns * $column-width) + (($columns - 1) * $gutter-width);
+}
+
+@function golden-ratio($base) {
+    @return $base * 1.618;
+} 
+
+// EFFECTS & TRANSITIONS FUNCTIONS
+// --------------------------------------------------
+@function duration($key) {
+    @return get-token($transition-durations, $key, '$transition-durations');
+}
+
+@function ease($key) {
+    @return get-token($easings, $key, '$easings');
+}
+
+// DEBUGGING & VALIDATION FUNCTIONS
+// --------------------------------------------------
+@function debug($value, $label: 'Debug') {
+    @debug '#{$label}: #{$value}';
+    @return null;
+}
+
+@function validate($value, $allowed, $property: 'value') {
+    @if not list.index($allowed, $value) {
+        @error 'Invalid `#{$value}` for `#{$property}`. Allowed values: #{$allowed}';
+    }
+    @return $value;
+}
