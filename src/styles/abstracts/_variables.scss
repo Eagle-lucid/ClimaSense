@@ -1,186 +1,225 @@
 // src/styles/abstracts/_variables.scss
 // ==================================================
-// ClimaSense Design Tokens
-// Source of truth for scales, spacing, and core UI values.
+// ClimaSense Design Tokens (with Horizon & Nightfall Themes)
 // ==================================================
 
-// BREAKPOINTS 
+// Use sass module system
+@use 'sass:map';
+
+// BREAKPOINTS
 $breakpoints: (
-    xs: 0,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1200px,
-    xxl: 1400px
+  xs: 0,
+  sm: 36rem,   // 576px
+  md: 48rem,   // 768px
+  lg: 62rem,   // 992px
+  xl: 75rem,   // 1200px
+  xxl: 87.5rem // 1400px
 );
 
 // SPACING SCALE
 $spacer-base: 0.5rem; // 8px
 $spacers: (
-    0: 0, 
-    0.25: $spacer-base * 0.5, // 4px
-    1: $spacer-base,          // 8px
-    1.5: $spacer-base * 1.5,  // 12px
-    2: $spacer-base * 2,      // 16px
-    3: $spacer-base * 3,      // 24px
-    4: $spacer-base * 4,      // 32px
-    5: $spacer-base * 5,      // 40px
-    6: $spacer-base * 6,      // 48px
-    7: $spacer-base * 7,      // 56px
-    8: $spacer-base * 8       // 64px
+  0: 0,
+  0.25: $spacer-base * 0.5, // 4px
+  1: $spacer-base,          // 8px
+  1.5: $spacer-base * 1.5,  // 12px
+  2: $spacer-base * 2,      // 16px
+  3: $spacer-base * 3,      // 24px
+  4: $spacer-base * 4,      // 32px
+  5: $spacer-base * 5,      // 40px
+  6: $spacer-base * 6,      // 48px
+  7: $spacer-base * 7,      // 56px
+  8: $spacer-base * 8       // 64px
 );
 
-// BORDER SYSTEM 
+// ==================================================
+//  Horizon (Light Theme) & Nightfall (Dark Theme)
+// ==================================================
+
+// THEME MAPS
+$colors: (
+    primary: #2E8B57,
+    info: #5C9EAD,    
+    warning: #FF6B35,  
+    neutral-white: #FFFFFF,
+    neutral-black: #212121,
+    neutral-gray: #9E9E9E
+);
+$themes: (
+    horizon: (
+        background: map.get($colors, neutral-white),
+        surface: #F5F5F5,
+        text-primary: map.get($colors, neutral-black),
+        text-secondary: map.get($colors, neutral-gray),
+        border: #E0E0E0,
+        primary: map.get($colors, primary),
+        info: map.get($colors, info),
+        warning: map.get($colors, warning)
+    ),
+    nightfall: (
+        background: #121212,
+        surface: #1E1E1E,
+        text-primary: map.get($colors, neutral-white),
+        text-secondary: #BDBDBD,
+        border: #333333,
+        primary: map.get($colors, primary),
+        info: map.get($colors, info),
+        warning: map.get($colors, warning)
+    )
+);
+// ==================================================
+// CORE DESIGN TOKENS
+// ==================================================
+
+// BORDERS
 $border-width: 1px;
 $border-widths: (
-    thin: $border-width * 0.5, // 0.5px
-    normal: $border-width,      // 1px
-    thick: $border-width * 2    // 2px
+  thin: 0.5px,
+  normal: 1px,
+  thick: 2px
 );
-$border-color: #ddd;
 
-// BORDER RADIUS
+// RADIUS
 $border-radius: (
-    none: 0,
-    sm: 0.25rem,  // 4px
-    md: 0.5rem,   // 8px
-    lg: 1rem,     // 16px
-    xl: 1.5rem,   // 24px
-    pill: 50rem   // 800px
+  none: 0,
+  sm: 0.25rem,  // 4px
+  md: 0.5rem,   // 8px
+  lg: 1rem,     // 16px
+  xl: 1.5rem,   // 24px
+  pill: 50rem   // 800px
 );
 
-// TYPOGRAPHY (Base settings; scale lives in `_typography.scss`)
+// TYPOGRAPHY
 $font-size-base: 1rem; // 16px
 $line-height-base: 1.5; // 24px
 $font-weights: (
-    light: 300,
-    normal: 400,
-    medium: 500,
-    bold: 700
+  light: 300,
+  normal: 400,
+  medium: 500,
+  bold: 700
 );
 
-// ELEVATION/SHADOWS
+// SHADOWS / ELEVATION
 $shadows: (
-    none: none,
-    sm: 0 1px 2px rgba(0, 0, 0, 0.05),
-    md: 0 4px 6px rgba(0, 0, 0, 0.1),
-    lg: 0 10px 15px rgba(0, 0, 0, 0.15),
-    xl: 0 20px 25px rgba(0, 0, 0, 0.2),
-    inset: inset 0 2px 4px rgba(0, 0, 0, 0.06)
+    elevation-0: none,
+    elevation-1: 0 1px 2px rgba(0, 0, 0, 0.05),
+    elevation-2: 0 4px 6px rgba(0, 0, 0, 0.1),
+    elevation-3: 0 10px 15px rgba(0, 0, 0, 0.15),
+    elevation-4: 0 20px 25px rgba(0, 0, 0, 0.2),
+    elevation-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06)
 );
 
-// Z-INDEX LAYERING
+// Z-INDEX
 $z-indices: (
-    auto: auto,
-    base: 0,
-    dropdown: 1000,
-    sticky: 1020,
-    fixed: 1030,
-    modal-backdrop: 1040,
-    modal: 1050,
-    popover: 1060,
-    tooltip: 1070,
-    notification: 5000
+  auto: auto,
+  base: 0,
+  header: 100,
+  dropdown: 1000,
+  sticky: 1020,
+  fixed: 1030,
+  modal-backdrop: 1040,
+  modal: 1050,
+  popover: 1060,
+  tooltip: 1070,
+  notification: 5000
 );
 
-// TRANSITIONS/MOTIONS
+// MOTION
 $transition-durations: (
-    fast: 150ms,
-    normal: 300ms,
-    slow: 500ms
+  fast: 150ms,
+  normal: 300ms,
+  slow: 500ms
 );
 
 $transitions: (
-    base: all 0.2s ease-in-out,
-    fade: opacity 0.15s linear,
-    collapse: height 0.35s ease,
-    theme: background-color 0.3s ease, color 0.3s ease
+  base: all 0.2s ease-in-out,
+  fade: opacity 0.15s linear,
+  collapse: height 0.35s ease,
+  theme: background-color 0.3s ease, color 0.3s ease
 );
 
-// Easing functions for weather micro-interactions
 $easings: (
-    ease-in-out: cubic-bezier(0.4, 0, 0.2, 1),
-    ease-out: cubic-bezier(0.0, 0, 0.2, 1),
-    ease-in: cubic-bezier(0.4, 0, 1, 1),
-    linear: cubic-bezier(0.0, 0.0, 1, 1),
-    back: cubic-bezier(0.68, -0.55, 0.265, 1.55),
-   quint-out: cubic-bezier(0.23, 1, 0.32, 1)
+  ease-in-out: cubic-bezier(0.4, 0, 0.2, 1),
+  ease-out: cubic-bezier(0.0, 0, 0.2, 1),
+  ease-in: cubic-bezier(0.4, 0, 1, 1),
+  linear: cubic-bezier(0.0, 0.0, 1, 1),
+  back: cubic-bezier(0.68, -0.55, 0.265, 1.55),
+  ease-quint-out: cubic-bezier(0.23, 1, 0.32, 1)
 );
 
-// OPACITY 
+// OPACITY
 $opacity: (
-    hidden: 0,
-    disabled: 0.65,
-    overlay: 0.4,
-    visible: 1,
-    dimmed: 0.75
+  hidden: 0,
+  disabled: 0.65,
+  overlay: 0.4,
+  visible: 1,
+  dimmed: 0.75
 );
 
-// COMPONENT TOKENS 
+// FOCUS RING
+$focus-ring: 0 0 0 0.2rem rgba(102, 175, 233, 0.6);
 
-// HEADER
+// COMPONENT TOKENS
 $header-height: 4rem; // 64px
 
-// NAVIGATION
 $nav-links: (
-    padding-y: 0.5rem, // 8px
-    padding-x: 1rem,   // 16px
-    font-weight: 500 
+  padding-y: 0.5rem,
+  padding-x: 1rem,
+  font-weight: 500
 );
 
-// CARDS 
 $card: (
-    spacer-y: 32px,
-    spacer-x: 32px,
-    border-width: $border-width,
-    border-radius: 1rem, 
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 
-    cap-bg: transparent
+  spacer-y: 2rem,
+  spacer-x: 2rem,
+  border-width: $border-width,
+  border-radius: 1rem,
+  box-shadow: map.get($shadows, elevation-1),
+  cap-bg: transparent
 );
 
-// BUTTONS 
 $btn: (
-    border-radius: 0.5rem,
-    border-radius-sm: 0.25rem, 
-    border-radius-lg: 1rem, 
-    font-weight: 500,
-    transition: all 0.2s ease-in-out
+  radius: (
+    sm: 0.25rem,
+    md: 0.5rem,
+    lg: 1rem
+  ),
+  font-weight: 500,
+  transition: map.get($transitions, base)
 );
 
-// FORMS
 $form: (
-    input-padding-y: 16px,
-    input-padding-x: 24px,
-    input-border-width: $border-width,
-    input-border-color: $border-color,
-    input-border-radius: 0.5rem,
-    input-focus-border-color: #66afe9,
-    input-focus-box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6),
-    label-font-weight: 500 
+  input-padding-y: 1rem,
+  input-padding-x: 1.5rem,
+  input-border-width: $border-width,
+  input-border-color: $border-color,
+  input-border-radius: 0.5rem,
+  input-focus-border-color: #66afe9,
+  input-focus-box-shadow: $focus-ring,
+  label-font-weight: 500
 );
 
-// GRID SYSTEM
+// GRID
 $grid-columns: 12;
-$grid-gutter-width: 24px; 
+$grid-gutter-width: 1.5rem; // 24px
 $container-max-widths: (
-    sm: 540px,
-    md: 720px,
-    lg: 960px,
-    xl: 1140px,
-    xxl: 1320px
+  sm: 33.75rem,  // 540px
+  md: 45rem,     // 720px
+  lg: 60rem,     // 960px
+  xl: 71.25rem,  // 1140px
+  xxl: 82.5rem   // 1320px
 );
 
-// LAYOUT 
-$container-padding-x: 32px; 
-$container-padding-y: 32px;
-$section-padding-y: 48px; 
-$section-padding-x: 32px; 
+// LAYOUT
+$container-padding-x: 2rem;
+$container-padding-y: 2rem;
+$section-padding-y: 3rem;
+$section-padding-x: 2rem;
 
-// ICONS 
+// ICONS
 $icon-sizes: (
-    xs: 0.75rem,  // 12px
-    sm: 1rem,     // 16px
-    md: 1.5rem,   // 24px
-    lg: 2rem,     // 32px
-    xl: 3rem      // 48px
+  xs: 0.75rem,
+  sm: 1rem,
+  md: 1.5rem,
+  lg: 2rem,
+  xl: 3rem
 );
