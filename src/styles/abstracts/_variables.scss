@@ -6,6 +6,7 @@
 // Use sass module system
 @use 'sass:map';
 
+// --------------------------------------------------
 // BREAKPOINTS
 $breakpoints: (
   xs: 0,
@@ -16,6 +17,7 @@ $breakpoints: (
   xxl: 87.5rem // 1400px
 );
 
+// --------------------------------------------------
 // SPACING SCALE
 $spacer-base: 0.5rem; // 8px
 $spacers: (
@@ -24,6 +26,7 @@ $spacers: (
   1: $spacer-base,          // 8px
   1.5: $spacer-base * 1.5,  // 12px
   2: $spacer-base * 2,      // 16px
+  2.5: $spacer-base * 2.5,  // 20px (optional fractional spacer)
   3: $spacer-base * 3,      // 24px
   4: $spacer-base * 4,      // 32px
   5: $spacer-base * 5,      // 40px
@@ -32,46 +35,45 @@ $spacers: (
   8: $spacer-base * 8       // 64px
 );
 
-// ==================================================
-//  Horizon (Light Theme) & Nightfall (Dark Theme)
-// ==================================================
-
+// --------------------------------------------------
 // THEME MAPS
 $colors: (
-    primary: #2E8B57,
-    info: #5C9EAD,    
-    warning: #FF6B35,  
-    neutral-white: #FFFFFF,
-    neutral-black: #212121,
-    neutral-gray: #9E9E9E
+  primary: #2E8B57,
+  info: #5C9EAD,    
+  warning: #FF6B35,  
+  neutral-white: #FFFFFF,
+  neutral-black: #212121,
+  neutral-gray: #9E9E9E
 );
+
 $themes: (
-    horizon: (
-        background: map.get($colors, neutral-white),
-        surface: #F5F5F5,
-        text-primary: map.get($colors, neutral-black),
-        text-secondary: map.get($colors, neutral-gray),
-        border: #E0E0E0,
-        primary: map.get($colors, primary),
-        info: map.get($colors, info),
-        warning: map.get($colors, warning)
-    ),
-    nightfall: (
-        background: #121212,
-        surface: #1E1E1E,
-        text-primary: map.get($colors, neutral-white),
-        text-secondary: #BDBDBD,
-        border: #333333,
-        primary: map.get($colors, primary),
-        info: map.get($colors, info),
-        warning: map.get($colors, warning)
-    )
+  horizon: (
+    background: map.get($colors, neutral-white),
+    surface: #F5F5F5,
+    text-primary: map.get($colors, neutral-black),
+    text-secondary: map.get($colors, neutral-gray),
+    border: #E0E0E0,
+    primary: map.get($colors, primary),
+    info: map.get($colors, info),
+    warning: map.get($colors, warning)
+  ),
+  nightfall: (
+    background: #121212,
+    surface: #1E1E1E,
+    text-primary: map.get($colors, neutral-white),
+    text-secondary: #BDBDBD,
+    border: #333333,
+    primary: map.get($colors, primary),
+    info: map.get($colors, info),
+    warning: map.get($colors, warning)
+  )
 );
-// ==================================================
+
+// --------------------------------------------------
 // CORE DESIGN TOKENS
-// ==================================================
 
 // BORDERS
+$border-color: #E0E0E0;
 $border-width: 1px;
 $border-widths: (
   thin: 0.5px,
@@ -101,12 +103,12 @@ $font-weights: (
 
 // SHADOWS / ELEVATION
 $shadows: (
-    elevation-0: none,
-    elevation-1: 0 1px 2px rgba(0, 0, 0, 0.05),
-    elevation-2: 0 4px 6px rgba(0, 0, 0, 0.1),
-    elevation-3: 0 10px 15px rgba(0, 0, 0, 0.15),
-    elevation-4: 0 20px 25px rgba(0, 0, 0, 0.2),
-    elevation-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06)
+  elevation-0: none,
+  elevation-1: 0 1px 2px rgba(0, 0, 0, 0.05),
+  elevation-2: 0 4px 6px rgba(0, 0, 0, 0.1),
+  elevation-3: 0 10px 15px rgba(0, 0, 0, 0.15),
+  elevation-4: 0 20px 25px rgba(0, 0, 0, 0.2),
+  elevation-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06)
 );
 
 // Z-INDEX
@@ -223,3 +225,9 @@ $icon-sizes: (
   lg: 2rem,
   xl: 3rem
 );
+
+// --------------------------------------------------
+// USAGE NOTE:
+// Use the theme() accessor from _functions.scss to get theme tokens, e.g.:
+// background-color: theme(background, nightfall);
+// color: theme(text-primary, horizon);
