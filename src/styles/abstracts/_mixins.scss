@@ -4,12 +4,12 @@
 // Reusable style patterns and utility mixins.
 // --------------------------------------------------
 
-@use './variables' as *;
-@use './functions' as *;
 @use 'sass:math';
 @use 'sass:map';
 @use 'sass:list';
 @use 'sass:meta';
+@use './variables' as *;
+@use './functions' as *;
 
 // RESPONSIVE MIXINS
 // --------------------------------------------------

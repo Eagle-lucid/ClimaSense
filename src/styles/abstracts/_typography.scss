@@ -4,11 +4,11 @@
 // Defines all typographic scales, styles and utilities.
 // ---------------------------------
 
+@use 'sass:map';
+@use 'sass:math';
 @use './variables' as *;
 @use './mixins' as *;
 @use './functions' as *;
-@use 'sass:map';
-@use 'sass:math';
 
 // FONT FACE IMPORTS
 // --------------------------------

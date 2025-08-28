@@ -3,9 +3,9 @@
 // Custom Properties & Theme Setup for ClimaSense (SCSS Token-Driven)
 // --------------------------------
 
+@use 'sass:map';
 @use '../abstracts/variables' as *;
 @use '../abstracts/functions' as *;
-@use 'sass:map';
 
 :root {
   // Colors
