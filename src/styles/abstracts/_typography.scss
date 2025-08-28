@@ -1,0 +1,412 @@
+// src/styles/abstracts/_typography.scss
+// --------------------------------
+// ClimaSense Typography System
+// Defines all typographic scales, styles and utilities.
+// ---------------------------------
+
+@use './variables' as *;
+@use './mixins' as *;
+@use './functions' as *;
+@use 'sass:map';
+@use 'sass:math';
+
+// FONT FACE IMPORTS
+// --------------------------------
+
+// Import Google Fonts - Poppins & Inter
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+// FONT FAMILY VARIABLES 
+// ---------------------------------
+$font-families: (
+    sans: ('Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif),
+    heading: ('Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif),
+    mono: ('SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Courier New', Courier, monospace),
+    system: (-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif)
+);
+
+// TYPE SCALE 
+// ---------------------------------
+$type-scale: (
+    xs: 0.75rem,   // 12px
+    sm: 0.875rem,  // 14px
+    base: 1rem,    // 16px
+    lg: 1.125rem,  // 18px
+    xl: 1.25rem,   // 20px
+    '2xl': 1.5rem, // 24px
+    '3xl': 1.875rem, // 30px
+    '4xl': 2.25rem, // 36px
+    '5xl': 3rem,   // 48px
+    '6xl': 3.75rem // 60px
+);
+
+// LINE HEIGHT SCALE 
+// ---------------------------------
+$line-heights: (
+    none: 1,
+    tight: 1.25,
+    snug: 1.375,
+    normal: 1.5,
+    relaxed: 1.625,
+    loose: 2
+);
+
+// LETTER SPACING 
+// ---------------------------------
+$letter-spacing: (
+    tighter: -0.05em,
+    tight: -0.025em,
+    normal: 0em,
+    wide: 0.025em,
+    wider: 0.05em,
+    widest: 0.1em
+);
+
+// FONT WEIGHTS ALIASES 
+// ---------------------------------
+$font-weights: (
+    thin: 100,
+    extra-light: 200,
+    light: 300,
+    normal: 400,
+    medium: 500,
+    semi-bold: 600,
+    bold: 700,
+    extra-bold: 800,
+    black: 900
+);
+
+// TEXT STYLES (Combination for specific use cases)
+// --------------------------------
+$text-styles: (
+    display: (
+        font-size: map.get($type-scale, '5xl'),
+        line-height: map.get($line-heights, tight),
+        letter-spacing: map.get($letter-spacing, tight),
+        font-weight: map.get($font-weights, bold),
+        font-family: map.get($font-families, heading)
+    ),
+    heading-1: (
+        font-size: map.get($type-scale, '4xl'),
+        line-height: map.get($line-heights, snug),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, semi-bold),
+        font-family: map.get($font-families, heading)
+    ),
+    heading-2: (
+        font-size: map.get($type-scale, '3xl'),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, semi-bold),
+        font-family: map.get($font-families, heading)
+    ),
+    heading-3: (
+        font-size: map.get($type-scale, '2xl'),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, medium),
+        font-family: map.get($font-families, heading)
+    ),
+    body-lg: (
+        font-size: map.get($type-scale, lg),
+        line-height: map.get($line-heights, relaxed),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, normal),
+        font-family: map.get($font-families, sans)
+    ),
+    body: (
+        font-size: map.get($type-scale, base),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, normal),
+        font-family: map.get($font-families, sans)
+    ),
+    body-sm: (
+        font-size: map.get($type-scale, sm),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, normal),
+        font-family: map.get($font-families, sans)
+    ),
+    caption: (
+        font-size: map.get($type-scale, xs),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, wide),
+        font-weight: map.get($font-weights, normal),
+        font-family: map.get($font-families, sans)
+    ),
+    button: (
+        font-size: map.get($type-scale, base),
+        line-height: map.get($line-heights, none),
+        letter-spacing: map.get($letter-spacing, wide),
+        font-weight: map.get($font-weights, medium),
+        font-family: map.get($font-families, sans)
+    ),
+    code: (
+        font-size: map.get($type-scale, sm),
+        line-height: map.get($line-heights, normal),
+        letter-spacing: map.get($letter-spacing, normal),
+        font-weight: map.get($font-weights, normal),
+        font-family: map.get($font-families, mono)
+    )
+);
+
+// RESPONSIVE TYPE SCALE 
+// ---------------------------------
+$responsive-type-scale: (
+    sm: (
+        xs: 0.625rem,   // 10px
+        sm: 0.75rem,    // 12px
+        base: 0.875rem, // 14px
+        lg: 1rem,       // 16px
+        xl: 1.125rem,   // 18px
+        '2xl': 1.25rem, // 20px
+        '3xl': 1.5rem,  // 24px
+        '4xl': 1.875rem,// 30px
+        '5xl': 2.25rem, // 36px
+        '6xl': 3rem     // 48px
+    ),
+    md: (
+        xs: 0.75rem,    // 12px
+        sm: 0.875rem,   // 14px
+        base: 1rem,     // 16px
+        lg: 1.125rem,   // 18px
+        xl: 1.25rem,    // 20px
+        '2xl': 1.5rem,  // 24px
+        '3xl': 1.875rem,// 30px
+        '4xl': 2.25rem, // 36px
+        '5xl': 3rem,    // 48px
+        '6xl': 3.75rem  // 60px
+    ),
+    lg: (
+        xs: 0.875rem,   // 14px
+        sm: 1rem,       // 16px
+        base: 1.125rem, // 18px
+        lg: 1.25rem,    // 20px
+        xl: 1.5rem,     // 24px
+        '2xl': 1.875rem,// 30px
+        '3xl': 2.25rem, // 36px
+        '4xl': 3rem,    // 48px
+        '5xl': 3.75rem, // 60px
+        '6xl': 4.5rem   // 72px
+    )
+);
+
+// TYPOGRAPHY MIXINS
+// ---------------------------------
+
+/// Applies a text style from the $text-style map
+/// @param {String} $style - The text style key
+@mixin text-style($style) {
+    $style-map: map.get($text-styles, $style);
+    @if $style-map {
+        font-size: map.get($style-map, font-size);
+        line-height: map.get($style-map, line-height);
+        letter-spacing: map.get($style-map, letter-spacing);
+        font-weight: map.get($style-map, font-weight);
+        font-family: map.get($style-map, font-family);
+    } @else {
+        @warn "Text style `#{$style}` not found in $text-styles map.";
+    }
+}
+
+/// Responsive typography mixins
+/// @param {String} $style - The text style key
+/// @param {String} $breakpoint-styles - The breakpoint key (sm, md, lg)
+/// @param {String} $property - The CSS property to apply (font-size, line-height, etc.)
+/// @param {String} $value-key - The key in the responsive type scale map
+@mixin responsive-typography($style, $breakpoint-styles, $property, $value-key) {
+    $breakpoint-map: map.get($responsive-type-scale, $breakpoint-styles);
+    @if $breakpoint-map {
+        $value: map.get($breakpoint-map, $value-key);
+        @if $value {
+            @if $property == 'font-size' {
+                font-size: $value;
+            } @else if $property == 'line-height' {
+                line-height: $value;
+            } @else if $property == 'letter-spacing' {
+                letter-spacing: $value;
+            } @else if $property == 'font-weight' {
+                font-weight: $value;
+            } @else if $property == 'font-family' {
+                font-family: $value;
+            } @else {
+                @warn "Property `#{$property}` is not supported.";
+            }
+        } @else {
+            @warn "Value key `#{$value-key}` not found in responsive type scale for `#{$breakpoint-styles}`.";
+        }
+    } @else {
+        @warn "Breakpoint styles `#{$breakpoint-styles}` not found in $responsive-type-scale map.";
+    }
+}
+
+/// Vertical rhythm utility for consistent spacing 
+/// @param {Number} $lines [1] - Number of baseline grid lines 
+@mixin vertical-rhythm($lines: 1) {
+    $baseline: 1.5rem; // Use your base line height or spacing value
+    margin-top: math.round($lines * $baseline * 1000) / 1000;
+    margin-bottom: math.round($lines * $baseline * 1000) / 1000;
+}
+
+// Text balance for better readability 
+@mixin text-balance {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+/// Fluid typography between min and max sizes
+/// @param {String} $min-size - Minimum font size (e.g., 1rem)
+/// @param {String} $max-size - Maximum font size (e.g., 2rem)
+/// @param {String} $min-vw - Minimum viewport width (e.g., 320px)
+/// @param {String} $max-vw - Maximum viewport width (e.g., 1200px)
+@mixin fluid-type($min-size, $max-size, $min-vw: 320px, $max-vw: 1200px) {
+    font-size: $min-size;
+
+    @media (min-width: $min-vw) {
+        font-size: calc(#{$min-size} + (#{$max-size} - #{$min-size}) * ((100vw - #{$min-vw}) / (#{$max-vw} - #{$min-vw})));
+    }
+
+    @media (min-width: $max-vw) {
+        font-size: $max-size;
+    }
+}
+
+// GLOBAL TYPOGRAPHY STYLES 
+// ----------------------------------
+
+/// Applies base typography styles to HTML elements
+@mixin global-typography {
+    // Base body styles
+    body {
+      @include text-style(body);
+      @include font-smooth;
+      text-rendering: optimizeLegibility;
+    }
+
+    // Headings 
+    h1 {
+      @include text-style(heading-1);
+      @include vertical-rhythm(1);
+    }
+    h2 {
+      @include text-style(heading-2);
+      @include vertical-rhythm(1);
+    }
+    h3 {
+      @include text-style(heading-3);
+      @include vertical-rhythm(1);  
+    }
+
+    // Paragraphs
+    p {
+      @include text-style(body);
+      @include vertical-rhythm(1);
+    }
+
+    // Captions
+    .caption {
+      @include text-style(caption);
+    }
+
+    // Links 
+    a {
+      color: theme(primary, horizon);
+      text-decoration: none;
+      @include text-style(body);
+      transition: color 0.3s ease;
+
+      &:hover, &:focus {
+        color: theme(primary, nightfall);
+        text-decoration: underline;
+      }
+    }
+
+    // Lists 
+    ul, ol {
+      @include text-style(body);
+      @include vertical-rhythm(1);
+      padding-left: 1.5rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    // Code 
+    code, pre {
+      @include text-style(code);
+      background-color: theme(surface, horizon);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+    }
+
+    // Blockquote 
+    blockquote {
+      border-left: 4px solid theme(primary, horizon);
+      padding-left: 1rem;
+      color: theme(text-secondary, horizon);
+      font-style: italic;
+      @include vertical-rhythm(1);
+    }
+    
+    // Utility classes
+    .text-center {
+      text-align: center;
+    }
+    .text-right {
+      text-align: right;
+    }
+    .text-left {
+      text-align: left;
+    }
+    .text-justify {
+      text-align: justify;
+    }
+    .text-uppercase {
+      text-transform: uppercase;
+      letter-spacing: map.get($letter-spacing, wide);
+    }
+}
+
+// UTILITY CLASS GENERATION 
+// -----------------------------------------
+
+/// Generates utility classes for typography 
+@mixin generate-typography-utilities {
+    // Font sizes
+    @each $size, $value in $type-scale {
+        .text-#{$size} {
+            font-size: $value !important;
+        }
+    }
+
+    // Line heights
+    @each $lh, $value in $line-heights {
+        .leading-#{$lh} {
+            line-height: $value !important;
+        }
+    }
+
+    // Letter spacing
+    @each $ls, $value in $letter-spacing {
+        .tracking-#{$ls} {
+            letter-spacing: $value !important;
+        }
+    }
+
+    // Font weights
+    @each $weight, $value in $font-weights {
+        .font-#{$weight} {
+            font-weight: $value !important;
+        }
+    }
+
+    // Font families
+    @each $family, $value in $font-families {
+        .font-#{$family} {
+            font-family: $value !important;
+        }
+    }
+}
