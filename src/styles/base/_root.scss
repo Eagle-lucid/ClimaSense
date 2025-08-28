@@ -1,0 +1,72 @@
+// src/styles/base/_root.scss
+// --------------------------------
+// Custom Properties & Theme Setup for ClimaSense (SCSS Token-Driven)
+// --------------------------------
+
+@use '../abstracts/variables' as *;
+@use '../abstracts/functions' as *;
+@use 'sass:map';
+
+:root {
+  // Colors
+  --color-primary: #{map.get($colors, primary)};
+  --color-info: #{map.get($colors, info)};
+  --color-warning: #{map.get($colors, warning)};
+  --color-neutral-white: #{map.get($colors, neutral-white)};
+  --color-neutral-black: #{map.get($colors, neutral-black)};
+  --color-neutral-gray: #{map.get($colors, neutral-gray)};
+
+  // Theme backgrounds
+  --background-horizon: #{map.get(map.get($themes, horizon), background)};
+  --background-nightfall: #{map.get(map.get($themes, nightfall), background)};
+
+  // Border radius
+  --radius-sm: #{map.get($border-radius, sm)};
+  --radius-md: #{map.get($border-radius, md)};
+  --radius-lg: #{map.get($border-radius, lg)};
+  --radius-xl: #{map.get($border-radius, xl)};
+  --radius-pill: #{map.get($border-radius, pill)};
+
+  // Spacing
+  --space-0: #{map.get($spacers, 0)};
+  --space-1: #{map.get($spacers, 1)};
+  --space-2: #{map.get($spacers, 2)};
+  --space-3: #{map.get($spacers, 3)};
+  --space-4: #{map.get($spacers, 4)};
+  --space-5: #{map.get($spacers, 5)};
+  --space-6: #{map.get($spacers, 6)};
+
+  // Font sizes
+  --font-xs: #{map.get($type-scale, xs)};
+  --font-sm: #{map.get($type-scale, sm)};
+  --font-base: #{map.get($type-scale, base)};
+  --font-lg: #{map.get($type-scale, lg)};
+  --font-xl: #{map.get($type-scale, xl)};
+  --font-2xl: #{map.get($type-scale, '2xl')};
+  --font-3xl: #{map.get($type-scale, '3xl')};
+  --font-4xl: #{map.get($type-scale, '4xl')};
+  --font-5xl: #{map.get($type-scale, '5xl')};
+  --font-6xl: #{map.get($type-scale, '6xl')};
+
+  // Z-index
+  --z-header: #{map.get($z-indices, header)};
+  --z-modal: #{map.get($z-indices, modal)};
+  --z-tooltip: #{map.get($z-indices, tooltip)};
+
+  // Shadows
+  --shadow-1: #{map.get($shadows, elevation-1)};
+  --shadow-2: #{map.get($shadows, elevation-2)};
+
+  // Transitions
+  --transition-fast: #{map.get($transition-durations, fast)};
+  --transition-normal: #{map.get($transition-durations, normal)};
+  --transition-slow: #{map.get($transition-durations, slow)};
+}
+
+// Dark theme override
+[data-theme="nightfall"] {
+  --background-horizon: #{map.get(map.get($themes, nightfall), background)};
+  --color-neutral-white: #{map.get($themes, nightfall, text-primary)};
+  --color-neutral-black: #{map.get($themes, nightfall, text-secondary)};
+  --color-neutral-gray: #{map.get($colors, neutral-gray)};
+}
