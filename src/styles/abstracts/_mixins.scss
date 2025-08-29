@@ -212,8 +212,8 @@
 // COMPONENT-SPECIFIC MIXINS
 // --------------------------------------------------
 
-@mixin card($padding-key: 4, $shadow-level: elevation-1) {
-    background-color: theme(background, horizon);
+@mixin card($padding-key: 4, $shadow-level: elevation-1, $mode: horizon) {
+    background-color: theme(background, $mode);
     border-radius: get-token($border-radius, md, 'card()');
     padding: get-token($spacers, $padding-key, 'card(#{$padding-key})');
     @include box-shadow($shadow-level);
@@ -392,4 +392,15 @@
         @include respond-to(xl) { content: 'xl'; }
         @include respond-to(xxl) { content: 'xxl'; }
     }
+}
+
+// ANIMATION MIXINS
+// --------------------------------------------------
+@mixin animate($property, $from, $to, $duration: normal, $easing: ease-in-out) {
+  @include reduce-motion {
+    transition: none;
+  }
+  transition: $property get-token($transition-durations, $duration) get-token($easings, $easing);
+  from { #{$property}: $from; }
+  to { #{$property}: $to; }
 }
