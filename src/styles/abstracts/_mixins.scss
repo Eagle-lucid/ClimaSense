@@ -8,14 +8,14 @@
 @use 'sass:map';
 @use 'sass:list';
 @use 'sass:meta';
-@use './variables' as *;
-@use './functions' as *;
+@use './variables' as v;
+@use './functions' as f;
 
 // RESPONSIVE MIXINS
 // --------------------------------------------------
 
 @mixin respond-to($breakpoint) {
-    $breakpoint-value: get-token($breakpoints, $breakpoint, 'respond-to(#{$breakpoint})');
+    $breakpoint-value: f.get-token(v.$breakpoints, $breakpoint, 'respond-to(#{$breakpoint})');
     @if $breakpoint-value {
         @media (min-width: $breakpoint-value) {
             @content;
@@ -27,7 +27,7 @@
 }
 
 @mixin respond-down-to($breakpoint) {
-    $breakpoint-value: get-token($breakpoints, $breakpoint, 'respond-down-to(#{$breakpoint})');
+    $breakpoint-value: f.get-token(v.$breakpoints, $breakpoint, 'respond-down-to(#{$breakpoint})');
     @if $breakpoint-value {
         @media (max-width: #{$breakpoint-value - 0.02px}) {
             @content;
@@ -39,8 +39,8 @@
 }
 
 @mixin respond-between($min, $max) {
-    $min-value: get-token($breakpoints, $min, 'respond-between(#{$min}, #{$max})');
-    $max-value: get-token($breakpoints, $max, 'respond-between(#{$min}, #{$max})');
+    $min-value: f.get-token(v.$breakpoints, $min, 'respond-between(#{$min}, #{$max})');
+    $max-value: f.get-token(v.$breakpoints, $max, 'respond-between(#{$min}, #{$max})');
     @if $min-value and $max-value {
         @media (min-width: $min-value) and (max-width: $max-value) {
             @content;
@@ -85,7 +85,7 @@
 @mixin grid-container($gap-key: 3, $columns: auto-fit, $min-column-width: 200px, $max-column-width: 1fr) {
     display: grid;
     grid-template-columns: repeat($columns, minmax($min-column-width, $max-column-width));
-    grid-gap: get-token($spacers, $gap-key, 'grid-container(#{$gap-key})');
+    grid-gap: f.get-token(v.$spacers, $gap-key, 'grid-container(#{$gap-key})');
 }
 
 @mixin flex-container($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap, $gap-key: 0) {
@@ -95,7 +95,7 @@
     align-items: $align;
     flex-wrap: $wrap;
     @if $gap-key != 0 {
-        gap: get-token($spacers, $gap-key, 'flex-container(#{$gap-key})');
+        gap: f.get-token(v.$spacers, $gap-key, 'flex-container(#{$gap-key})');
     }
 }
 
@@ -158,7 +158,7 @@
 // --------------------------------------------------
 
 @mixin box-shadow($level: elevation-1) {
-    $shadow-value: get-token($shadows, $level, 'box-shadow(#{$level})');
+    $shadow-value: f.get-token(v.$shadows, $level, 'box-shadow(#{$level})');
     @if $shadow-value {
         box-shadow: $shadow-value;
     } @else {
@@ -167,7 +167,7 @@
 } 
 
 @mixin focus($color-key: primary) {
-    $focus-color: get-token($colors, $color-key, 'focus(#{$color-key})');
+    $focus-color: f.get-token(v.$colors, $color-key, 'focus(#{$color-key})');
     outline: 2px solid $focus-color;
     outline-offset: 2px;
     box-shadow: 0 0 0 3px alpha-color($focus-color, 0.3);
@@ -185,8 +185,8 @@
 }
 
 @mixin transition($property: all, $duration: normal, $easing: ease-in-out) {
-    $duration-value: get-token($transition-durations, $duration, 'transition(#{$duration})');
-    $easing-value: get-token($easings, $easing, 'transition(#{$easing})');
+    $duration-value: f.get-token(v.$transition-durations, $duration, 'transition(#{$duration})');
+    $easing-value: f.get-token(v.$easings, $easing, 'transition(#{$easing})');
     
     @if not $duration-value {
         @warn 'No value found for transition duration: #{$duration}. Using 0.3s as fallback.';
@@ -213,9 +213,9 @@
 // --------------------------------------------------
 
 @mixin card($padding-key: 4, $shadow-level: elevation-1, $mode: horizon) {
-    background-color: theme(background, $mode);
-    border-radius: get-token($border-radius, md, 'card()');
-    padding: get-token($spacers, $padding-key, 'card(#{$padding-key})');
+    background-color: f.theme(background, $mode);
+    border-radius: f.get-token(v.$border-radius, md, 'card()');
+    padding: f.get-token(v.$spacers, $padding-key, 'card(#{$padding-key})');
     @include box-shadow($shadow-level);
     @include transition(box-shadow, fast);
     
@@ -247,17 +247,17 @@
     text-decoration: none;
     cursor: pointer;
     
-    padding: get-token($spacers, $padding-y-key, 'button-base(#{$padding-y-key})') 
-             get-token($spacers, $padding-x-key, 'button-base(#{$padding-x-key})');
+    padding: f.get-token(v.$spacers, $padding-y-key, 'button-base(#{$padding-y-key})') 
+             f.get-token(v.$spacers, $padding-x-key, 'button-base(#{$padding-x-key})');
     font-size: $font-size-base;
-    border-radius: get-token($border-radius, $border-radius-key, 'button-base(#{$border-radius-key})');
-    background-color: get-token($colors, $bg-color-key, 'button-base(#{$bg-color-key})');
-    color: get-token($colors, $text-color-key, 'button-base(#{$text-color-key})');
+    border-radius: f.get-token(v.$border-radius, $border-radius-key, 'button-base(#{$border-radius-key})');
+    background-color: f.get-token(v.$colors, $bg-color-key, 'button-base(#{$bg-color-key})');
+    color: f.get-token(v.$colors, $text-color-key, 'button-base(#{$text-color-key})');
     @include box-shadow(elevation-1);
     @include transition(background-color, fast);
     
     &:hover {
-        background-color: get-token($colors, $hover-bg-color-key, 'button-base(#{$hover-bg-color-key})');
+        background-color: f.get-token(v.$colors, $hover-bg-color-key, 'button-base(#{$hover-bg-color-key})');
         @include box-shadow(elevation-2);
     }
     
@@ -266,14 +266,14 @@
     }
     
     &:disabled {
-        background-color: get-token($colors, $disabled-bg-color-key, 'button-base(#{$disabled-bg-color-key})');
-        color: get-token($colors, $disabled-text-color-key, 'button-base(#{$disabled-text-color-key})');
+        background-color: f.get-token(v.$colors, $disabled-bg-color-key, 'button-base(#{$disabled-bg-color-key})');
+        color: f.get-token(v.$colors, $disabled-text-color-key, 'button-base(#{$disabled-text-color-key})');
         cursor: not-allowed;
         opacity: 0.6;
         box-shadow: none;
         
         &:hover {
-            background-color: get-token($colors, $bg-color-key, 'button-base(#{$bg-color-key})');
+            background-color: f.get-token(v.$colors, $bg-color-key, 'button-base(#{$bg-color-key})');
             @include box-shadow(elevation-1);
         }
         
@@ -285,7 +285,7 @@
 }
 
 @mixin weather-icon($size-key: md, $fill-type: fill) {
-    $size-value: get-token($icon-sizes, $size-key, 'weather-icon(#{$size-key})');
+    $size-value: f.get-token(v.$icon-sizes, $size-key, 'weather-icon(#{$size-key})');
     width: $size-value;
     height: $size-value;
     
@@ -400,7 +400,7 @@
   @include reduce-motion {
     transition: none;
   }
-  transition: $property get-token($transition-durations, $duration) get-token($easings, $easing);
+  transition: $property f.get-token(v.$transition-durations, $duration) f.get-token(v.$easings, $easing);
   from { #{$property}: $from; }
   to { #{$property}: $to; }
 }

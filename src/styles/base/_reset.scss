@@ -4,8 +4,8 @@
 // --------------------------------
 
 @use "sass:map";
-@use "../abstracts/variables" as *;
-@use "../abstracts/functions" as *;
+@use "../abstracts/variables" as v;
+@use "../abstracts/functions" as f;
 
 // Base box sizing (Bootstrap already does this, but we keep for clarity)
 *, *::before, *::after {
@@ -59,8 +59,8 @@ table {
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: map.get($font-families, sans, reset);
-  font-size: $font-size-base;
-  background-color: theme(background, horizon);
-  color: theme(text-primary, horizon);
+  font-family: map.get(v.$font-families, sans, reset);
+  font-size: v.$font-size-base;
+  background-color: f.theme(background, horizon);
+  color: f.theme(text-primary, horizon);
 }

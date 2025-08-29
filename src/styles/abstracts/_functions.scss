@@ -9,7 +9,7 @@
 @use 'sass:list';
 @use 'sass:math';
 @use 'sass:meta';
-@use './variables' as *;
+@use './variables' as v;
 
 // THEME TOKEN ACCESSOR
 /// Gets a theme-specific token
@@ -17,11 +17,11 @@
 /// @param {String} $mode - The theme mode (horizon or nightfall)
 /// @return {*} The value from the $themes map
 @function theme($key, $mode: horizon) {
-    @if not map.has-key($themes, $mode) {
+    @if not map.has-key(v.$themes, $mode) {
         @warn 'Invalid theme mode `#{$mode}`. Falling back to `horizon`. Available modes: #{map.keys($themes)}';
         $mode: horizon;
     }
-    $theme-map: get-token($themes, $mode, '$themes');
+    $theme-map: get-token(v.$themes, $mode, '$themes');
     @return get-token($theme-map, $key, 'theme(#{$mode})');
 }
 
@@ -35,23 +35,23 @@
 }
 
 @function space($key) {
-    @return get-token($spacers, $key, '$spacers');
+    @return get-token(v.$spacers, $key, '$spacers');
 }
 
 @function radius($key) {
-    @return get-token($border-radius, $key, '$border-radius');
+    @return get-token(v.$border-radius, $key, '$border-radius');
 }
 
 @function weight($key) {
-    @return get-token($font-weights, $key, '$font-weights');
+    @return get-token(v.$font-weights, $key, '$font-weights');
 }
 
 @function shadow($key) {
-    @return get-token($shadows, $key, '$shadows');
+    @return get-token(v.$shadows, $key, '$shadows');
 }
 
 @function z($key) {
-    @return get-token($z-indices, $key, '$z-indices');
+    @return get-token(v.$z-indices, $key, '$z-indices');
 }
 
 // COLOR FUNCTIONS (refined)
@@ -108,7 +108,7 @@
 // RESPONSIVE DESIGN FUNCTIONS
 // --------------------------------------------------
 @function breakpoint($name) {
-    @return get-token($breakpoints, $name, '$breakpoints');
+    @return get-token(v.$breakpoints, $name, '$breakpoints');
 }
 
 @function min-breakpoint($name) {
@@ -146,11 +146,11 @@
 // EFFECTS & TRANSITIONS FUNCTIONS
 // --------------------------------------------------
 @function duration($key) {
-    @return get-token($transition-durations, $key, '$transition-durations');
+    @return get-token(v.$transition-durations, $key, '$transition-durations');
 }
 
 @function ease($key) {
-    @return get-token($easings, $key, '$easings');
+    @return get-token(v.$easings, $key, '$easings');
 }
 
 // DEBUGGING & VALIDATION FUNCTIONS
