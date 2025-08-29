@@ -5,6 +5,7 @@ import Hero from './components/hero/Hero';
 import ForecastList from './components/forecast/ForecastList';
 import ForecastCard from './components/forecast/ForecastCard';
 import useWeather from './context/useWeather';
+import './styles/main.scss';
 
 function MainContent() {
   const {
