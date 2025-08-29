@@ -49,23 +49,29 @@ $colors: (
 $themes: (
   horizon: (
     background: map.get($colors, neutral-white),
-    surface: #F5F5F5,
+    surface-1: #F5F5F5,
+    surface-2: #EAEAEA,
     text-primary: map.get($colors, neutral-black),
     text-secondary: map.get($colors, neutral-gray),
     border: #E0E0E0,
     primary: map.get($colors, primary),
     info: map.get($colors, info),
-    warning: map.get($colors, warning)
+    warning: map.get($colors, warning),
+    accent: #2E8B57,
+    gradient: linear-gradient(135deg, #2E8B57 0%, #5C9EAD 100%)
   ),
   nightfall: (
     background: #121212,
-    surface: #1E1E1E,
+    surface-1: #1E1E1E,
+    surface-2: #2A2A2A,
     text-primary: map.get($colors, neutral-white),
     text-secondary: #BDBDBD,
     border: #333333,
     primary: map.get($colors, primary),
     info: map.get($colors, info),
-    warning: map.get($colors, warning)
+    warning: map.get($colors, warning),
+    accent: #5C9EAD,
+    gradient: linear-gradient(135deg, #5C9EAD 0%, #2E8B57 100%)
   )
 );
 
@@ -138,6 +144,15 @@ $transitions: (
   fade: opacity 0.15s linear,
   collapse: height 0.35s ease,
   theme: background-color 0.3s ease, color 0.3s ease
+);
+
+// Animations 
+$animations: (
+  pulse: all 0.6s cubic-bezier(0.4, 0, 0.6, 1) infinite,
+  float: transform 3s ease-in-out infinite alternate,
+  spring: cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite,
+  shake: transform 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite,
+  bounce: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite
 );
 
 $easings: (
