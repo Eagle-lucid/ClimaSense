@@ -1,25 +1,21 @@
 // src/components/header/Header.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { IconSearch, IconCurrentLocation, IconSun, IconMoon, IconTemperature } from '@tabler/icons-react';
+import React, { useState, useEffect, useContext } from 'react';
+import { IconSun, IconMoon, IconTemperature } from '@tabler/icons-react';
+import { WeatherContext } from '../../context/WeatherContext';
+import SearchBar from '../ui/SearchBar/SearchBar';
 import './header.scss';
 
 // Memoize icons for performance improvement
-const MemoizedIconSearch = React.memo(IconSearch);
-const MemoizedIconCurrentLocation = React.memo(IconCurrentLocation);
 const MemoizedIconSun = React.memo(IconSun);
 const MemoizedIconMoon = React.memo(IconMoon);
 const MemoizedIconTemperature = React.memo(IconTemperature);
 
-export default function Header({
-    onSearch,
-    onGeolocate,
-    onUnitToggle,
-    currentUnit = 'C',
-}) {
-    const [ searchQuery, setSearchQuery ] = useState('');
+export default function Header() {
     const [ theme, setTheme ] = useState('horizon');
-    const [ error, setError ] = useState('');
-    
+
+    // Get function for WeatherContext
+    const { onUnitToggle, unit } = useContext(WeatherContext);
+
     // Detect system preference & local storage theme
     useEffect(() => {
         const storedTheme = localStorage.getItem('climasense-theme');
@@ -51,40 +47,11 @@ export default function Header({
         return () => prefersDark.removeEventListener('change', handleChange);
     }, []);
 
-    const handleThemeToggle = () => {
+        const handleThemeToggle = () => {
         const newTheme = theme === 'horizon' ? 'nightfall' : 'horizon';
         setTheme(newTheme);
     };
-    
-    const handleUnitToggle = useCallback(() => {
-        if (onUnitToggle) {
-            onUnitToggle(currentUnit === 'C' ? 'F' : 'C');
-        }
-    }, [onUnitToggle, currentUnit]);
 
-    // Error handling for search 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (searchQuery.trim()) {
-            try {
-                await onSearch(searchQuery.trim());
-                setSearchQuery('');
-                setError('');
-            } catch {
-                setError('City not found. Please try again.');
-            }
-        }
-    };
-
-    // Error for handling geolocation 
-    const handleGeolocation = async () => {
-        try {
-            await onGeolocate();
-            setError('');
-        } catch  {
-            setError('Unable to retrieve your location. Please try again.');
-        }
-    };
     return (
         <header className="app-header" role='banner'>
             {/** Logo/Title Group **/}
@@ -96,45 +63,20 @@ export default function Header({
                 </h1>
             </div>
 
-            {/** Search Form **/}
-            <form onSubmit={handleSubmit} className="header__search-form">
-                <input 
-                   type='text'
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   placeholder='Search for a city...'
-                   aria-label='Search for weather by city'
-                   aria-live='polite'
-                     className='header__search-input'
-                />
-                <button 
-                type='submit'
-                aria-label='Search'
-                className='header__search-btn'>
-                    <MemoizedIconSearch size={20} stroke={2} />
-                </button>
-            </form>
-            {error && <div className='header__error' role='alert'>{error}</div>}    
+            {/* {Search Bar Component} */}
+            <SearchBar/>
 
             { /** Right-Aligned Controls **/}
             <div className='header__controls'>
                 {/** Temperature Unit Toggle **/}
                 <button 
-                onClick={handleUnitToggle}
-                aria-label={`Switch to ${currentUnit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+                onClick={onUnitToggle}
+                aria-label={`Switch to ${unit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
                 className='header__unit-toggle'>
                     <MemoizedIconTemperature size={20} stroke={2} />
-                    <span>°{currentUnit}</span>
+                    <span>°{unit}</span>
                 </button>
-
-                {/** Geolocation Button **/}
-                <button 
-                onClick={handleGeolocation}
-                aria-label='Use current location'
-                className='header__geo-btn'>
-                    <MemoizedIconCurrentLocation size={20} stroke={2} />
-                </button>
-
+                
                 {/** Theme Toggle Button **/}
                 <button 
                 onClick={handleThemeToggle}
@@ -144,5 +86,6 @@ export default function Header({
                 </button>
                 </div>
         </header>
-    );
-} 
+     )
+}
+ 
