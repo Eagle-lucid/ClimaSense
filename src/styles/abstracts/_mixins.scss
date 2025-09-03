@@ -29,7 +29,7 @@
 @mixin respond-down-to($breakpoint) {
     $breakpoint-value: f.get-token(v.$breakpoints, $breakpoint, 'respond-down-to(#{$breakpoint})');
     @if $breakpoint-value {
-        @media (max-width: #{$breakpoint-value - 0.02px}) {
+        @media (max-width: #{$breakpoint-value - 0.02rem}) {
             @content;
         }
     } @else {
@@ -249,7 +249,7 @@
     
     padding: f.get-token(v.$spacers, $padding-y-key, 'button-base(#{$padding-y-key})') 
              f.get-token(v.$spacers, $padding-x-key, 'button-base(#{$padding-x-key})');
-    font-size: $font-size-base;
+    font-size: v.$font-size-base;
     border-radius: f.get-token(v.$border-radius, $border-radius-key, 'button-base(#{$border-radius-key})');
     background-color: f.get-token(v.$colors, $bg-color-key, 'button-base(#{$bg-color-key})');
     color: f.get-token(v.$colors, $text-color-key, 'button-base(#{$text-color-key})');
