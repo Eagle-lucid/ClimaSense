@@ -1,0 +1,236 @@
+// src/components/ui/SearchBar/SearchBar.scss
+@use 'sass:map';
+@use 'sass:math';
+@use '../../../styles/abstracts/variables' as v;
+@use '../../../styles/abstracts/mixins' as m;
+@use '../../../styles/abstracts/functions' as f;
+
+.search__bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 36rem;
+    margin: 0 f.space(3);
+
+    // Mobile responsiveness
+    @include m.respond-down-to(lg) {
+        margin: 0 f.space(2);
+        max-width: 32rem;
+    }
+
+    @include m.respond-down-to(md) {
+        order: 2;
+        width: 100%;
+        margin: 0 f.space(1.5);
+        max-width: 100%;
+    }
+
+    @include m.respond-down-to(sm) {
+        margin: 0 f.space(1);
+    }
+
+    &-form {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        position: relative;
+    }
+    &-input {
+        flex: 1;
+        padding: f.space(1) f.space(1.5);
+        border: v.$border-width solid f.theme(border, horizon);
+        border-radius: f.radius(pill) 0 0 f.radius(pill);
+        background: f.theme(surface-2, horizon);
+        color: f.theme(text-primary);
+        @include m.box-shadow(elevation-1);
+        @include m.transition((border-color, box-shadow));
+
+        :root[data-theme='nightfall'] &,
+        body.theme-nightfall & {
+            border: v.$border-width solid f.theme(border, nightfall);
+            background: f.theme(surface-2, nightfall);
+        }
+
+        // Focus Glow
+            &:focus {
+                border-color: map.get(v.$colors, info);
+                @include m.box-shadow(elevation-2);
+
+                :root[data-theme='nightfall'] &, 
+                body.theme-nightfall & {
+                    border-color: map.get(v.$colors, info);
+                }
+            }
+
+        &::placeholder {
+            color: f.theme(text-secondary, horizon);
+            opacity: .8;
+            transition: opacity 0.2s ease;
+
+            :root[data-theme='nightfall'] &, 
+            body.theme-nightfall & {
+                color: f.theme(text-secondary, nightfall);
+            }
+        }
+
+        // subtle placeholder motion cue on focus 
+        &:focus::placeholder {
+            opacity: .5;
+        }
+
+        // Mobile adjustment 
+        @include m.respond-down-to(md) {
+            padding: f.space(1) f.space(1.5);
+        }
+    }
+ 
+    // Search BTN
+    &-btn {
+        padding: f.space(1.5) f.space(2);
+        background: map.get(v.$colors, info);
+        color: map.get(v.$colors, neutral-white);
+        border-radius: 0 f.radius(pill) f.radius(pill) 0;
+        cursor: pointer;
+        @include m.transition(background-color, normal);
+        @include m.flex-container(row, center, center, nowrap, 0);
+
+
+        :root[data-theme='nightfall'] &,
+        body.theme-nightfall & {
+            color: map.get(v.$colors, neutral-black);
+        }
+
+        &:hover:not(:disabled) {
+            background: map.get(v.$colors, info);
+            transform: scale(0.98);
+            @include m.box-shadow(elevation-2);
+        }
+
+        &:disabled {
+            opacity: f.get-token(v.$opacity, disabled);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &.is-loading {
+            @extend .is-loading;
+        }
+        @include m.respond-down-to(md) {
+            padding: f.space(1.5) f.space(2);
+        }
+    }
+     
+    // Geolocation BTN
+    &-geo__btn {
+        appearance: none;
+        border: 0;
+        border-radius: f.radius(pill);
+        margin-left: f.space(2);
+        padding: f.space(1.5);
+        background: map.get(v.$colors, neutral-gray);
+        color: red;
+        cursor: pointer;
+        @include m.transition((background-color, transform, box-shadow), fast);
+        @include m.flex-container(row, center, center, nowrap, 0);
+
+        :root[data-theme='nightfall'] &,
+        body.theme-nightfall & {
+            background: f.theme(surface-2, nightfall);
+            color: red;
+        }
+
+        &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            @include m.box-shadow(elevation-1);
+        }
+
+        &:focus {
+            @include m.focus(primary)
+        }
+
+        &:disabled {
+            opacity: f.get-token(v.$opacity, disabled);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &.is-loading {
+            @extend .is-loading;
+        }  
+        
+        @include m.respond-down-to(md) {
+            padding: f.space(1.5);
+        }
+    } 
+
+    &-error {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + #{f.space(1)});
+        transform: translateX(-50%);
+        margin-top: f.space(1);
+        padding: f.space(1) f.space(2);
+        border-radius: f.radius(md);
+        background: f.alpha-color(map.get(v.$colors, warning), 0.95);
+        color: f.contrast-color(f.theme(warning));
+        font-size: map.get(v.$type-scale, md);
+        font-weight: f.weight(medium);
+        @include m.box-shadow(elevation-2);
+        animation: toast-in 0.3s f.ease(ease-out);
+        z-index: f.z(tooltip);
+
+        @include m.respond-down-to(md) {
+            position: fixed;
+            top: auto;
+            bottom: f.space(2);
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: 90vw;
+        }
+    }
+    @keyframes toast-in {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -10px);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+    }
+}
+
+// High contrast mode
+@include m.high-contrast {
+  .search__bar-input {
+    border-width: 2px;
+  }
+  
+  .search__bar-btn,
+  .search__bar-geo__btn {
+    border: 2px solid currentColor;
+  }
+}
+
+// Reduced motion
+@include m.reduce-motion {
+  .search__bar-btn,
+  .search__bar-geo__btn {
+    transition: none;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+  
+  .search__bar-error {
+    animation: none;
+  }
+  
+  .is-loading::after {
+    animation: none;
+    content: "⏳";
+  }
+}
