@@ -38,22 +38,22 @@ $spacers: (
 // --------------------------------------------------
 // THEME MAPS
 $colors: (
-  primary: #2E8B57,
-  info: #5C9EAD,    
+  primary: #00ff6e,
+  info: #00d0ff,    
   warning: #FF6B35,  
   neutral-white: #FFFFFF,
-  neutral-black: #212121,
+  neutral-black: #000000,
   neutral-gray: #9E9E9E
 );
 
 $themes: (
   horizon: (
     background: map.get($colors, neutral-white),
-    surface-1: #F5F5F5,
-    surface-2: #EAEAEA,
+    surface-1: #2E8B57,
+    surface-2: #dadada,
     text-primary: map.get($colors, neutral-black),
-    text-secondary: map.get($colors, neutral-gray),
-    border: #E0E0E0,
+    text-secondary: map.get($colors, neutral-white),
+    border: #dadada,
     primary: map.get($colors, primary),
     info: map.get($colors, info),
     warning: map.get($colors, warning),
@@ -62,11 +62,11 @@ $themes: (
   ),
   nightfall: (
     background: #121212,
-    surface-1: #1E1E1E,
-    surface-2: #2A2A2A,
+    surface-1: #1B4D36,
+    surface-2: #ffffff,
     text-primary: map.get($colors, neutral-white),
-    text-secondary: #BDBDBD,
-    border: #333333,
+    text-secondary: #797979,
+    border: #ffffff,
     primary: map.get($colors, primary),
     info: map.get($colors, info),
     warning: map.get($colors, warning),
