@@ -1,5 +1,5 @@
 // src/context/WeatherContext.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useGeolocation } from '../hooks/useGeolocation';
 import { fetchWeatherData } from '../utils/api/weatherAPI';
 import { fetchAQIData } from '../utils/api/aqiAPI';
@@ -15,30 +15,28 @@ export const WeatherProvider = ({ children }) => {
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
   const [theme, setTheme] = useState('light');
-
   const { getGeolocation } = useGeolocation();
 
-  // Try geolocation on mount, fallback to London if blocked
+  // Try geolocation on mount, fallback to default if blocked
   useEffect(() => {
     const fetchInitialWeather = async () => {
       setIsLoading(true);
       setError('');
       try {
         const coords = await getGeolocation();
-        const geoLocation = `${coords.latitude},${coords.longitude}`;
+        const geoLocation = `${coords.latitude},${coords.longitude}`; // Removed space
         setLocation(geoLocation);
         await fetchWeather(geoLocation);
       } catch (geoError) {
         console.error(geoError);
-        setError('Geolocation blocked. Showing weather for London.');
-        setLocation('London');
-        await fetchWeather('London');
+        setError('Geolocation blocked. Please search for a city manually.');
       } finally {
         setIsLoading(false);
       }
     };
+    
     fetchInitialWeather();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Fetch weather when location changes (user search, etc.)
@@ -98,9 +96,38 @@ export const WeatherProvider = ({ children }) => {
       setTheme(DARK_THEME_CONDITIONS.includes(transformedData.current.condition) ? 'dark' : 'light');
     } catch (err) {
       setError(err.message || 'Failed to fetch weather data');
+      throw err; 
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  // Function to handle search from SearchBar component
+  const handleSearch = useCallback(async (query) => {
+    setLocation(query);
+    await fetchWeather(query);
+  }, [fetchWeather]);
+
+  // Function to handle geolocation from search bar component 
+  const handleGeolocate = useCallback(async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const coords = await getGeolocation();
+      const geoLocation = `${coords.latitude},${coords.longitude}`; // Removed space
+      setLocation(geoLocation);
+      await fetchWeather(geoLocation);
+    } catch (geoError) {
+      setError('Unable to retrieve your location. Please try again.');
+      throw geoError; 
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchWeather, getGeolocation]);
+
+  // Function to handle unit toggle
+  const handleUnitToggle = useCallback(() => {
+    setUnit(prev => prev === '°C' ? '°F' : '°C');
   }, []);
 
   return (
@@ -108,14 +135,16 @@ export const WeatherProvider = ({ children }) => {
       value={{
         weatherData,
         location,
-        unit,
+        unit: unit === '°C' ? 'C' : 'F',
         isLoading,
         error,
         favorites,
         theme,
         fetchWeather,
+        onSearch: handleSearch,
+        onGeolocate: handleGeolocate,
+        onUnitToggle: handleUnitToggle,
         setLocation,
-        toggleUnit: () => setUnit(prev => prev === '°C' ? '°F' : '°C'),
         addFavorite: (loc) => setFavorites(prev => [...new Set([...prev, loc])]),
         removeFavorite: (loc) => setFavorites(prev => prev.filter(l => l !== loc)),
       }}
@@ -123,4 +152,4 @@ export const WeatherProvider = ({ children }) => {
       {children}
     </WeatherContext.Provider>
   );
-} 
+}
