@@ -1,19 +1,32 @@
-import React from 'react';
+// src/components/hero/WeatherNarrator.jsx
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { IconShare, IconBike, IconCar, IconHome } from '@tabler/icons-react';
+import { Typewriter } from 'react-simple-typewriter';
 import './WeatherNarrator.scss';
 
 const WeatherNarrator = ({ weatherData, location }) => {
   // Safe default values for weather data
-  const safeWeatherData = {
+  const safeWeatherData = useMemo(() => ({
     temp: 0,
     feelsLike: 0,
     windSpeed: 0,
     condition: '',
-    ...weatherData // Override with actual data if available
+    ...weatherData
+  }), [weatherData]);
+
+  // Username fallback
+  const userName = localStorage.getItem('userName') || 'friend';
+
+  // Greetings by time of the day
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
   };
 
   // Normalize weather condition with fallback
-  const normalizeCondition = (condition) => {
+  const normalizeCondition = useCallback((condition) => {
     if (!condition) return 'default';
     const lowerCondition = condition.toLowerCase();
     return lowerCondition.includes('cloud') ? 'cloudy' 
@@ -22,25 +35,15 @@ const WeatherNarrator = ({ weatherData, location }) => {
          : lowerCondition.includes('storm') ? 'stormy'
          : lowerCondition.includes('sun') ? 'sunny'
          : 'default';
-  };
+  }, []);
 
-  // Time-based greeting
-  const getTimeOfDay = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
-  };
-
-  // Weather narrative generator with null checks
-  const generateNarrative = () => {
+  // Weather narrative generator 
+  const buildNarrative = useCallback((mode = 'default') => {
     const { temp, feelsLike, windSpeed, condition } = safeWeatherData;
     const normalizedCondition = normalizeCondition(condition);
-    const timeOfDay = getTimeOfDay();
-    const userName = localStorage.getItem('userName') || 'friend';
+    const timeOfDay = getTimeOfDay(); 
 
-    const narratives = {
-      
+    const base = {
       sunny: `☀️ Good ${timeOfDay}, ${userName}. The sun is shining bright in ${location || 'your location'} at ${temp}°C. 
              ${feelsLike > temp ? `Feels like ${feelsLike}°C` : ''} 
              ${windSpeed > 15 ? 'with refreshing breezes.' : 'with calm skies.'}`,
@@ -61,32 +64,45 @@ const WeatherNarrator = ({ weatherData, location }) => {
                
       default: `🌤️ ${temp}°C and ${condition || 'unknown conditions'} in ${location || 'your location'}`
     };
+    
+    const modes = {
+      car: `${base[normalizedCondition] || base.default} 🚗 Drive safe!`,
+      bike: `${base[normalizedCondition] || base.default} 🚴 Perfect ride conditions? Check the wind.`,
+      home: `${base[normalizedCondition] || base.default} 🏡 Cozy time indoors.`,
+      default: base[normalizedCondition] || base.default,
+    }
 
-    return narratives[normalizedCondition] || narratives.default;
-  };
+    return modes[mode] || modes.default;
+  }, [safeWeatherData, location, userName, normalizeCondition]); // REMOVED getTimeOfDay from dependencies
 
   // Lifestyle suggestions with fallbacks
-  const getLifestyleTip = () => {
+  const getLifestyleTip = useCallback(() => {
     const normalizedCondition = normalizeCondition(safeWeatherData.condition);
     const { temp } = safeWeatherData;
     
     const tips = {
-      sunny: temp > 25 
-        ? 'Apply SPF 30+ sunscreen before going out.' 
-        : 'Great day for outdoor activities!',
-      rainy: 'Waterproof shoes recommended.',
-      snowy: 'Check road conditions before driving.',
-      stormy: 'Avoid unnecessary travel.',
-      default: 'Have a wonderful day!'
+      sunny: temp > 25 ? '☀️ Use sunscreen outdoors.' : '🌳 Great day for outdoor fun.',
+      rainy: '🌂 Waterproof shoes recommended.',
+      snowy: '❄️ Roads may be slippery. Stay safe.',
+      stormy: '⚠️ Best to avoid travel today.',
+      default: '✨ Have a wonderful day!',
     };
 
     return tips[normalizedCondition] || tips.default;
-  };
+  }, [safeWeatherData, normalizeCondition]);
 
-  // Share functionality with enhanced error handling
+  // Mode handling 
+  const [currentMode, setCurrentMode] = useState('default');
+  const [narrative, setNarrative] = useState('');
+
+  // Update narrative when mode or buildNarrative changes
+  useEffect(() => {
+    setNarrative(buildNarrative(currentMode));
+  }, [currentMode, buildNarrative]);
+
+  // Share functionality
   const handleShare = async () => {
     try {
-      const narrative = generateNarrative();
       const shareData = {
         title: `ClimaSense Weather for ${location || 'your location'}`,
         text: narrative,
@@ -110,7 +126,7 @@ const WeatherNarrator = ({ weatherData, location }) => {
   // Early return if critical data is missing
   if (!weatherData || !weatherData.condition) {
     return (
-      <div className="narrator">
+      <div className="narrator p-3 p-md-4">
         <div className="narrator__message">
           <p className="narrator__text">Loading weather information...</p>
         </div>
@@ -118,46 +134,61 @@ const WeatherNarrator = ({ weatherData, location }) => {
     );
   }
 
-  return (
-    <div className="narrator">
-      <div className="narrator__message">
-        <p className="narrator__text">{generateNarrative()}</p>
-        <p className="narrator__tip">{getLifestyleTip()}</p>
-      </div>
+  const modeConfig = [
+    { key: 'car', Icon: IconCar, label: 'Commuter mode' },
+    { key: 'bike', Icon: IconBike, label: 'Fitness mode' },
+    { key: 'home', Icon: IconHome, label: 'Home mode' }
+  ];
 
-      <div className="narrator__controls">
+  return (
+    <div className="narrator p-3 p-md-4">
+      {/* Typing animation for narrative */}
+      <div className="narrator__message mb-3">
+        <p className="narrator__text fs-4">
+          <Typewriter
+            words={[narrative]}
+            loop={false}
+            cursor
+            cursorStyle="|"
+            typeSpeed={40}
+            deleteSpeed={20}
+            delaySpeed={2000}
+          />
+        </p>
+
+        <p className="narrator__tip text-muted mt-2">{getLifestyleTip()}</p>
+      </div>
+      
+      {/* Controls */}
+      <div className="narrator__controls d-flex align-items-center justify-content-between">
         <button 
           onClick={handleShare}
           aria-label="Share weather"
-          className="narrator__share"
+          className="narrator__share btn btn-outline-primary btn-sm d-flex align-items-center"
           type="button"
         >
-          <IconShare size={20} />
+          <IconShare size={18} className="me-1" />
           <span>Share Vibe</span>
         </button>
 
-        <div className="narrator__modes">
-          <button 
-            aria-label="Commuter mode"
+      <div className="narrator__modes btn-group" role="group" aria-label="Weather modes">
+        {modeConfig.map((mode) => (
+          <button
+            key={mode.key}
+            aria-label={mode.label}
+            aria-pressed={currentMode === mode.key}
             type="button"
+            className={`btn btn-sm btn-outline-secondary narrator__mode-btn ${
+              currentMode === mode.key ? 'active' : ''
+            }`}
+            onClick={() => setCurrentMode(mode.key)}
           >
-            <IconCar size={20} />
+            <mode.Icon size={18} />
           </button>
-          <button 
-            aria-label="Fitness mode"
-            type="button"
-          >
-            <IconBike size={20} />
-          </button>
-          <button 
-            aria-label="Home mode"
-            type="button"
-          >
-            <IconHome size={20} />
-          </button>
-        </div>
+        ))}
       </div>
     </div>
+  </div>
   );
 };
 
