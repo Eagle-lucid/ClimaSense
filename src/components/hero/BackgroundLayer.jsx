@@ -1,226 +1,248 @@
 // src/components/hero/BackgroundLayer.jsx
-import React, { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import './BackgroundLayer.scss';
 
-// Particle configuration
+// Particle counts
 const PARTICLE_COUNT = {
   rain: 60,
   snow: 30,
-  thunder: 5
+  thunder: 5,
+  wind: 15,
+  fog: 3
 };
+
+// Random helper
+const rand = (min, max) => min + Math.random() * (max - min);
 
 const BackgroundLayer = ({ condition = 'clear' }) => {
   const bgRef = useRef(null);
-  const animationRefs = useRef([]);
+  const animationRef = useRef(null); // single RAF ID
+  const timeoutRefs = useRef([]);
+  const particlesRef = useRef([]);
 
-  // Normalize weather conditions with extended support
-  const normalizedCondition = useCallback(() => {
+  // Normalize condition with fallback
+  const normalizedCondition = useMemo(() => {
     if (!condition) return 'clear';
     const cond = condition.toLowerCase();
-    
+
     const conditionsMap = {
-      rain: 'rainy',
-      drizzle: 'rainy',
+      rain: 'rain',
+      drizzle: 'rain',
       thunderstorm: 'thunder',
-      snow: 'snowy',
-      wind: 'windy',
-      breeze: 'windy',
-      cloud: 'cloudy',
-      mist: 'foggy',
-      haze: 'foggy',
-      fog: 'foggy'
+      snow: 'snow',
+      wind: 'wind',
+      breeze: 'wind',
+      cloud: 'clouds',
+      clouds: 'clouds',
+      mist: 'fog',
+      haze: 'fog',
+      fog: 'fog',
+      clear: 'clear',
+      sunny: 'clear'
     };
 
-    for (const [key, value] of Object.entries(conditionsMap)) {
-      if (cond.includes(key)) return value;
-    }
-    return 'clear';
+    return conditionsMap[cond] || 'clear';
   }, [condition]);
 
-  // Cleanup all animations
+  // Cleanup all animations/particles
   const clearEffects = useCallback(() => {
-    animationRefs.current.forEach(cancelId => cancelAnimationFrame(cancelId));
-    animationRefs.current = [];
-    bgRef.current?.querySelectorAll('.particle').forEach(el => el.remove());
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    animationRef.current = null;
+
+    timeoutRefs.current.forEach(clearTimeout);
+    timeoutRefs.current = [];
+
+    particlesRef.current.forEach((p) => {
+      if (p?.parentNode) p.parentNode.removeChild(p);
+    });
+    particlesRef.current = [];
   }, []);
 
-  // Enhanced rain effect with realistic drops
-  const addRainEffect = useCallback(() => {
-    const container = bgRef.current;
-    if (!container) return;
-
+  // 🌧 Rain effect
+  const addRainEffect = useCallback((container) => {
     for (let i = 0; i < PARTICLE_COUNT.rain; i++) {
       const drop = document.createElement('div');
       drop.className = 'particle rain-drop';
-      
-      // Random positioning and animation delay
-      const left = Math.random() * 100;
-      const delay = Math.random() * 2;
-      const duration = 0.5 + Math.random() * 0.5;
-      
+
+      const left = rand(0, 100);
+      const delay = rand(0, 2);
+      const duration = rand(0.5, 1);
+      const length = rand(10, 25);
+      const opacity = rand(0.4, 0.8);
+
       drop.style.cssText = `
         left: ${left}%;
         animation-delay: ${delay}s;
         animation-duration: ${duration}s;
+        height: ${length}px;
+        opacity: ${opacity};
       `;
 
       container.appendChild(drop);
+      particlesRef.current.push(drop);
     }
   }, []);
 
-  // Fluffy snowflakes with varying sizes
-  const addSnowEffect = useCallback(() => {
-    const container = bgRef.current;
-    if (!container) return;
-
+  // ❄ Snow effect
+  const addSnowEffect = useCallback((container) => {
     for (let i = 0; i < PARTICLE_COUNT.snow; i++) {
       const flake = document.createElement('div');
       flake.className = 'particle snow-flake';
-      
-      const size = 5 + Math.random() * 10;
-      const left = Math.random() * 100;
-      const delay = Math.random() * 5;
-      const duration = 10 + Math.random() * 10;
-      
+
+      const size = rand(3, 12);
+      const left = rand(-5, 105);
+      const delay = rand(0, 8);
+      const duration = rand(8, 25);
+      const sway = rand(5, 15);
+
       flake.style.cssText = `
         width: ${size}px;
         height: ${size}px;
         left: ${left}%;
         animation-delay: ${delay}s;
         animation-duration: ${duration}s;
+        --sway: ${sway}px;
+        opacity: ${rand(0.7, 0.95)};
       `;
 
       container.appendChild(flake);
+      particlesRef.current.push(flake);
     }
   }, []);
 
-  // Thunder effect with flashes
-  const addThunderEffect = useCallback(() => {
-    const container = bgRef.current;
-    if (!container) return;
-
+  // ⚡ Thunder effect
+  const addThunderEffect = useCallback((container) => {
     let flashCount = 0;
-    
+
     const thunderFlash = () => {
       if (flashCount >= PARTICLE_COUNT.thunder) return;
-      
+
       const flash = document.createElement('div');
       flash.className = 'particle thunder-flash';
+      flash.style.opacity = rand(0.3, 0.8);
+
       container.appendChild(flash);
-      
-      const duration = 100 + Math.random() * 400;
-      const delay = 2000 + Math.random() * 5000;
-      
-      setTimeout(() => {
-        flash.remove();
+      particlesRef.current.push(flash);
+
+      const duration = rand(100, 300);
+      const delay = rand(3000, 8000);
+
+      const removeTimeout = setTimeout(() => {
+        if (flash.parentNode) flash.parentNode.removeChild(flash);
         flashCount++;
-        setTimeout(thunderFlash, delay);
+        const nextTimeout = setTimeout(thunderFlash, delay);
+        timeoutRefs.current.push(nextTimeout);
       }, duration);
+
+      timeoutRefs.current.push(removeTimeout);
     };
 
     thunderFlash();
   }, []);
 
-  // Wind effect with moving particles
-  const addWindEffect = useCallback(() => {
-    const container = bgRef.current;
-    if (!container) return;
-
+  // 🌬 Wind effect
+  const addWindEffect = useCallback((container) => {
     const windParticles = [];
-    const windStrength = 2 + Math.random() * 3;
-    
-    const animateWind = () => {
-      windParticles.forEach(particle => {
-        const currentLeft = parseFloat(particle.style.left) || 0;
-        particle.style.left = `${currentLeft + windStrength}%`;
-        
-        if (currentLeft > 100) {
-          particle.style.left = '-10%';
-        }
-      });
-      
-      const animationId = requestAnimationFrame(animateWind);
-      animationRefs.current.push(animationId);
-    };
+    const windStrength = rand(1.5, 4);
 
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < PARTICLE_COUNT.wind; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle wind-particle';
-      
+
       particle.style.cssText = `
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        opacity: ${0.2 + Math.random() * 0.3};
+        left: ${rand(-10, 100)}%;
+        top: ${rand(0, 100)}%;
+        opacity: ${rand(0.1, 0.4)};
+        width: ${rand(15, 40)}px;
+        height: ${rand(2, 6)}px;
       `;
-      
+
       container.appendChild(particle);
       windParticles.push(particle);
+      particlesRef.current.push(particle);
     }
+
+    const animateWind = () => {
+      windParticles.forEach((p) => {
+        const currentLeft = parseFloat(p.style.left) || 0;
+        p.style.left = `${currentLeft + windStrength}%`;
+
+        const currentTop = parseFloat(p.style.top) || 50;
+        const verticalDrift = Math.sin(Date.now() * 0.001) * 0.5;
+        p.style.top = `${currentTop + verticalDrift}%`;
+
+        if (currentLeft > 120) {
+          p.style.left = '-20%';
+          p.style.top = `${rand(0, 100)}%`;
+          p.style.opacity = rand(0.1, 0.4);
+        }
+      });
+
+      animationRef.current = requestAnimationFrame(animateWind);
+    };
 
     animateWind();
   }, []);
 
-  // Fog/mist effect
-  const addFogEffect = useCallback(() => {
-    const container = bgRef.current;
-    if (!container) return;
+  // 🌫 Fog effect
+  const addFogEffect = useCallback((container) => {
+    for (let i = 0; i < PARTICLE_COUNT.fog; i++) {
+      const fogLayer = document.createElement('div');
+      fogLayer.className = 'particle fog-layer';
 
-    const fogLayer = document.createElement('div');
-    fogLayer.className = 'particle fog-layer';
-    container.appendChild(fogLayer);
+      fogLayer.style.cssText = `
+        opacity: ${rand(0.1, 0.3)};
+        animation-duration: ${rand(20, 40)}s;
+        animation-delay: ${rand(0, 10)}s;
+        z-index: ${i};
+      `;
+
+      container.appendChild(fogLayer);
+      particlesRef.current.push(fogLayer);
+    }
   }, []);
 
   // Main effect handler
   useEffect(() => {
-    const conditionType = normalizedCondition();
     const container = bgRef.current;
     if (!container) return;
 
     clearEffects();
 
-    // Time-of-day class
+    // Time-of-day
     const hour = new Date().getHours();
-    const isDaytime = hour > 6 && hour < 20;
-    container.dataset.time = isDaytime ? 'day' : 'night';
+    container.dataset.time = hour >= 6 && hour < 20 ? 'day' : 'night';
 
-    // Reduced motion preference
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
+    // Reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       container.dataset.reducedMotion = 'true';
       return;
     }
 
-    // Apply effects based on condition
-    switch(conditionType) {
-      case 'rainy':
-        addRainEffect();
-        break;
-      case 'snowy':
-        addSnowEffect();
-        break;
-      case 'windy':
-        addWindEffect();
-        break;
-      case 'thunder':
-        addRainEffect();
-        addThunderEffect();
-        break;
-      case 'foggy':
-        addFogEffect();
-        break;
-      default:
-        break;
-    }
+    // Apply effects
+    const effectsMap = {
+      rain: () => addRainEffect(container),
+      snow: () => addSnowEffect(container),
+      wind: () => addWindEffect(container),
+      thunder: () => {
+        addRainEffect(container);
+        addThunderEffect(container);
+      },
+      fog: () => addFogEffect(container)
+    };
+
+    effectsMap[normalizedCondition]?.();
 
     return () => clearEffects();
   }, [normalizedCondition, clearEffects, addRainEffect, addSnowEffect, addWindEffect, addThunderEffect, addFogEffect]);
 
   return (
-    <div 
+    <div
       ref={bgRef}
-      className={`background-layer ${normalizedCondition()}`}
+      className={`background-layer ${normalizedCondition}`}
       aria-hidden="true"
+      role="presentation"
       data-testid="background-layer"
     />
   );
@@ -230,10 +252,14 @@ BackgroundLayer.propTypes = {
   condition: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.oneOf([
-      'clear', 'rain', 'snow', 'clouds', 'wind', 
+      'clear', 'rain', 'snow', 'clouds', 'wind',
       'thunderstorm', 'drizzle', 'mist', 'haze', 'fog'
     ])
   ])
+};
+
+BackgroundLayer.defaultProps = {
+  condition: 'clear'
 };
 
 export default BackgroundLayer;
