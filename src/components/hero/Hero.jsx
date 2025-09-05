@@ -1,5 +1,4 @@
 // src/components/hero/Hero.jsx
-import React from 'react';
 import WeatherNarrator from './WeatherNarrator';
 import EssentialsCard from './EssentialsCard';
 import BackgroundLayer from './BackgroundLayer';
