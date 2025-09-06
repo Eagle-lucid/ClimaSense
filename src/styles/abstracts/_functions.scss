@@ -9,6 +9,7 @@
 @use 'sass:list';
 @use 'sass:math';
 @use 'sass:meta';
+@use 'sass:color';
 @use './variables' as v;
 
 // THEME TOKEN ACCESSOR
@@ -23,6 +24,10 @@
     }
     $theme-map: get-token(v.$themes, $mode, '$themes');
     @return get-token($theme-map, $key, 'theme(#{$mode})');
+}
+
+@function theme-color($key, $theme: horizon) {
+  @return map.get(map.get(v.$themes, $theme), $key);
 }
 
 // DESIGN TOKEN ACCESSOR FUNCTIONS
