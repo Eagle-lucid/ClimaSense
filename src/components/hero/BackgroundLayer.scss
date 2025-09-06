@@ -1,0 +1,143 @@
+// src/component/hero/BackgroundLayer.scss
+@use 'sass:map';
+@use 'sass:color';
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/functions' as f;
+
+// { Background Layer Design }
+.background-layer {
+    @include m.position-abs-fill;
+    z-index: f.z(base);
+    overflow: hidden;
+
+    // Safe fallback (Clear day gradient)
+    @include m.gradient-bg(
+        f.theme-color(day-sky-start),
+        f.theme-color(day-sky-end)
+    );
+
+    @include m.smooth-transition(background 1s);
+
+    // ---------------
+    // Time of Day
+    // ---------------
+    &[data-time='day'] {
+        @include m.gradient-bg(
+            f.theme-color(day-sky-start, horizon),
+            f.theme-color(day-sky-end, horizon)
+        );
+    }
+
+    &[data-time='night'] {
+        @include m.gradient-bg(
+            f.theme-color(night-sky-start, nightfall),
+            f.theme-color(night-sky-end, nightfall)
+        );
+    }
+
+    // ---------------------------
+    // Weather condition overlay
+    // ---------------------------
+    &.rain::before,
+    &.snow::before,
+    &.fog::before,
+    &.clouds::before,
+    &.thunder::before,
+    &.wind::before {
+        @include m.position-abs-fill;
+        content: '';
+        pointer-events: none;
+        z-index: f.z(content); 
+    }
+
+    &.rain::before {
+        background: f.alpha-color(#1e3a5f, 0.4);
+    }
+
+    &.snow::before {
+       background: f.alpha-color(map.get(v.$colors, neutral-white), 0.3);
+    }
+
+    &.fog::before {
+        background: f.alpha-color(map.get(v.$colors, neutral-gray), 0.25);
+        -webkit-backdrop-filter: blur(6px);
+        backdrop-filter: blur(6px);
+    }
+
+    &.clouds::before {
+        background: f.alpha-color(#aaa, 0.25);
+    }
+
+    &.thunder::before {
+        background: f.alpha-color(#000, 0.2);
+    }
+
+    &.wind::before {
+        background: f.alpha-color(#87ceeb, 0.2); 
+    }
+
+    // ----------------------------
+    // Theme harmony adjustment
+    // (applies subtle tint)
+    // ----------------------------
+    // Global themes
+    :root[data-theme='horizon'] &,
+    body.theme-horizon & {
+      filter: hue-rotate(-5deg) brightness(1.05);
+    }
+    
+    :root[data-theme='nightfall'] &,
+    body.theme-nightfall & {
+      filter: hue-rotate(15deg) saturate(1.1);
+    }
+    
+    // Local override (component-specific)
+    &.theme-horizon {
+      filter: hue-rotate(-5deg) brightness(1.05);
+    }
+    
+    &.theme-nightfall {
+      filter: hue-rotate(15deg) saturate(1.1);
+    }
+
+    &[data-reduce-motion='true'] {
+        .particle {
+            @include m.disable-animations;
+        }
+    }
+}
+
+// -------------------
+// Particle Base Styles
+// -------------------
+.particle {
+  position: absolute;
+  background: white;
+  will-change: transform, opacity;
+}
+.particle-layer {
+    @include m.position-abs-fill;
+    pointer-events: none;
+    z-index: f.z(overlay);
+}
+
+.rain-drop {
+    @include m.rain-drop;
+}
+
+.snow-flake {
+    @include m.snow-flake;
+}
+
+.thunder-flash {
+    @include m.thunder-flash;
+}
+
+.wind-particle {
+    @include m.wind-particle;
+}
+
+.fog-layer {
+    @include m.fog-layer;
+}
