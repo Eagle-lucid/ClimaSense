@@ -58,7 +58,11 @@ $themes: (
     info: map.get($colors, info),
     warning: map.get($colors, warning),
     accent: #2E8B57,
-    gradient: linear-gradient(135deg, #2E8B57 0%, #5C9EAD 100%)
+    gradient: linear-gradient(135deg, #2E8B57 0%, #5C9EAD 100%),
+    day-sky-start: #87ceeb,
+    day-sky-end: #f0f8ff,
+    night-sky-start: #0d1b2a,
+    night-sky-end: #1b263b
   ),
   nightfall: (
     background: #121212,
@@ -71,7 +75,11 @@ $themes: (
     info: map.get($colors, info),
     warning: map.get($colors, warning),
     accent: #5C9EAD,
-    gradient: linear-gradient(135deg, #5C9EAD 0%, #2E8B57 100%)
+    gradient: linear-gradient(135deg, #5C9EAD 0%, #2E8B57 100%),
+    day-sky-start: #ffcc70,
+    day-sky-end: #4158d0,
+    night-sky-start: #0f0c29,
+    night-sky-end: #302b63,
   )
 );
 
@@ -189,7 +197,11 @@ $z-indices: (
   modal: 1050,
   popover: 1060,
   tooltip: 1070,
-  notification: 5000
+  notification: 5000,
+  content: 10,
+  overlay: 20,
+  modal-1: 50,
+  background: 1
 );
 
 // MOTION
