@@ -10,6 +10,7 @@
 @use 'sass:meta';
 @use './variables' as v;
 @use './functions' as f;
+@use './keyframes.scss';
 
 // RESPONSIVE MIXINS
 // --------------------------------------------------
@@ -113,6 +114,16 @@
     @if $left != 0 { left: $left; }
 }
 
+@mixin position-abs-fill {
+    position: absolute;
+    inset: 0;
+}
+
+@mixin abs-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
 // TYPOGRAPHY MIXINS
 // --------------------------------------------------
 
@@ -201,12 +212,20 @@
     transition: $property $duration-value $easing-value;
 }
 
+@mixin smooth-transition($properties: all, $time: 300ms, $easing: ease-in-out) {
+  transition: #{join($properties, ', ')} #{$time} #{$easing};
+}
+
 @mixin gradient-text($start-color, $end-color, $direction: to right) {
     background: linear-gradient($direction, $start-color, $end-color);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
+}
+
+@mixin gradient-bg($start, $end) {
+    background: linear-gradient(to bottom, $start, $end);
 }
 
 // COMPONENT-SPECIFIC MIXINS
@@ -403,4 +422,60 @@
   transition: $property f.get-token(v.$transition-durations, $duration) f.get-token(v.$easings, $easing);
   from { #{$property}: $from; }
   to { #{$property}: $to; }
+}
+
+// Disable animations (for reduced motion)
+@mixin disable-animations {
+  animation: none !important;
+  transition: none !important;
+}
+
+// ---------------
+// Particle Styles
+// ---------------
+
+// Rain drop
+@mixin rain-drop {
+    position: absolute;
+    top: -10%;
+    width: 2px;
+    background: f.alpha-color(map.get(v.$colors, info), 0.7);
+    animation: rain-fall linear infinite;
+}
+
+// Snow Flake
+@mixin snow-flake {
+  position: absolute;
+  top: -5%;
+  border-radius: 50%;
+  background: f.alpha-color(map.get(v.$colors, neutral-white), 0.9);
+  animation: snow-fall linear infinite;
+}
+
+// Thunder Flash
+@mixin thunder-flash {
+  position: absolute;
+  inset: 0;
+  background: f.alpha-color(map.get(v.$colors, neutral-white), 0.9);
+  animation: thunder-flash 0.5s ease-in-out;
+}
+
+// Wind Particle
+@mixin wind-particle {
+  position: absolute;
+  background: f.alpha-color(map.get(v.$colors, neutral-gray), 0.3);
+  border-radius: 2px;
+  animation: wind-drift linear infinite;
+}
+
+// Fog Layer
+@mixin fog-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: f.alpha-color(map.get(v.$colors, neutral-gray), 0.25);
+  filter: blur(40px);
+  animation: fog-layer-move linear infinite;
 }
