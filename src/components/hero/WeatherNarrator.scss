@@ -1,0 +1,303 @@
+// src/components/hero/WeatherNarrator.scss 
+@use 'sass:map';
+@use 'sass:color';
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/functions' as f;
+@use '../../styles/abstracts/typography' as t;
+
+// --------------------------------
+// Weather narrator base style
+// --------------------------------
+
+.narrator {
+    $self: &;
+
+    // Base glass morphism foundation
+    background: f.alpha-color(map.get(v.$colors, neutral-white), .1);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: f.radius(xl);
+    margin: f.space(2) f.space(1);
+    padding: f.space(2) f.space(1);
+    position: relative;
+    overflow: hidden;
+    transition: all f.duration(normal) f.ease(ease-in-out);
+     @include m.box-shadow(elevation-4);
+
+    // Prismatic edge glow 
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        background: linear-gradient(
+            45deg,
+            f.alpha-color(f.theme-color(primary, horizon), 0.3),
+            f.alpha-color(f.theme-color(info, horizon), 0.3),
+            f.alpha-color(f.theme-color(warning, horizon), 0.3),
+            f.alpha-color(f.theme-color(primary, horizon), 0.3)
+        );
+        border-radius: inherit;
+        z-index: f.z(background);
+        animation: holographic-glow 8s ease-in-out infinite;
+        opacity: map.get(v.$opacity, dimmed);
+    }
+
+    // Breathing animation 
+    animation: breathing 6s ease-in-out infinite;
+
+    &__message {
+        position: relative;
+        z-index: f.z(content);
+        min-height: 120px;
+    }
+
+    &__text {
+        @include t.text-style(body-lg);
+        color: f.theme(text-secondary, horizon);
+        margin: 0;
+        text-shadow: 
+        0 0 10px f.alpha-color(f.theme-color(primary, horizon), 0.3),
+        0 0 20px f.alpha-color(f.theme-color(info, horizon), 0.2);
+
+        :root[data-theme='nightfall'] &,
+        body.theme-nightfall & {
+            color: map.get(v.$colors, neutral-black);
+            text-shadow: 
+                0 0 10px f.alpha-color(f.theme-color(primary, nightfall), 0.3),
+                0 0 20px f.alpha-color(f.theme-color(info, nightfall), 0.2);
+        }
+
+        .Typewriter__cursor {
+            animation: cursor-pulse 1s  ease-in-out infinite;
+        }
+    }
+
+    //  Lifestyle tip with contextual reveal
+    &__tip {
+        @include t.text-style(body-sm);
+        color: f.theme-color(primary, horizon);
+        transition: all f.duration(fast) f.ease(ease-out);
+    }
+
+    // Controls container
+    &__controls {
+        position: relative;
+        z-index: f.z(content);
+        padding-top: f.space(2);
+        border-top: 1px solid f.alpha-color(map.get(v.$colors, neutral-white), 0.1);
+        max-width: fit-content;
+    }
+
+    // Share btn - energy field effect
+    &__share {
+        @include m.button-base;
+        @include t.text-style(button);
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        color: f.theme(text-primary, horizon) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        @include m.transition(base);
+
+        &:hover {
+            background: linear-gradient(
+                135deg,
+                f.alpha-color(f.theme-color(primary, horizon), 0.2),
+                f.alpha-color(f.theme-color(info, horizon), 0.2)
+            ) !important;
+            transform: translateY(-2px);
+            box-shadow: 
+                0 5px 15px f.alpha-color(f.theme-color(primary, horizon), 0.3),
+                inset 0 0 20px f.alpha-color(f.theme-color(primary, horizon), 0.1);
+        }
+
+        &:active {
+            transform: translateY(0) scale(0.98);
+        }
+    }
+
+    // Mode buttons group - connected intelligence system (CIS)
+    &__modes {
+        @include m.flex-container;
+        gap: f.space(2);
+
+        &.btn-group {
+            background: f.alpha-color(map.get(v.$colors, neutral-white), 0.5);
+            border-radius: f.radius(pill);
+            padding: f.space(0.25);
+            margin: f.space(1) 0;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+    }
+
+    // Individual mode btn - glass orbs
+    &__mode-btn {
+        @include m.flex-container(row, center, center);
+        width: 40px;
+        height: 40px;
+        border-radius: f.radius(pill);
+        border: 1px solid f.alpha-color(map.get(v.$colors, neutral-white), 0.7) !important;
+        background: f.alpha-color(map.get(v.$colors, neutral-white), 0.3) !important;
+        transition: all f.duration(fast) f.ease(back);
+
+        &:not(.active) {
+            opacity: map.get(v.$opacity, dimmed);
+            transform: scale(0.9);
+
+            &:hover {
+                opacity: 0.9;
+                transform: scale(1.05);
+            }
+        }
+
+        &:hover {
+            border: 1px solid transparent;
+            background: linear-gradient(
+                135deg,
+                f.alpha-color(f.theme-color(primary, horizon), 0.3),
+                f.alpha-color(f.theme-color(info, horizon), 0.3)
+            ) !important;
+            @include m.box-shadow(elevation-3);
+
+            svg {
+                transform: translateY(-2px) scale(1.1);
+                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+            }
+        }
+
+        // Active state 
+        &.active {
+            border: 1px solid transparent;
+            background: linear-gradient(
+                135deg,
+                f.theme-color(primary, horizon),
+                f.theme-color(info, horizon)
+            ) !important;
+            box-shadow: 
+              0 0 30px f.alpha-color(f.theme-color(primary, horizon), 0.6),
+              inset 0 0 20px f.alpha-color(map.get(v.$colors, neutral-white), 0.4);
+            transform: scale(1.1);
+
+            svg {
+                transform: translateY(-3px) scale(1.2);
+                filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+            }
+        }
+
+        svg {
+            transition: all f.duration(normal) f.ease(back);
+            color: f.theme(text-primary, horizon);
+        }
+    }
+
+    // Neighbor awareness effect 
+    &:hover &__mode-btn:not(:hover):not(.active) {
+        opacity: map.get(v.$opacity, overlay);
+        transform: scale(0.9);
+    }
+
+    // Responsive adaption
+    @include m.respond-down-to(md) {
+        padding: f.space(2) !important;
+
+        &__text {
+            @include t.text-style(body);
+        }
+
+        &__controls {
+            flex-direction: column;
+            gap: f.space(2);
+        }
+
+        &__modes {
+            order: -1;
+            margin-bottom: f.space(2);
+        }
+
+        &__mode-btn {
+            width: 44px;
+            height: 44px;
+        }
+    }
+
+    // Nightfall theme adaption 
+    :root[data-theme='nightfall'] &,
+    body.theme-nightfall & {
+       background: f.alpha-color(map.get(v.$colors, neutral-white), 0.3);
+       border-color: f.alpha-color(map.get(v.$colors, neutral-white), 0.1);
+
+       &::before {
+        background: linear-gradient(
+            45deg,
+            f.alpha-color(f.theme-color(primary, nightfall), 0.4),
+            f.alpha-color(f.theme-color(info, nightfall), 0.4),
+            f.alpha-color(f.theme-color(warning, nightfall), 0.4),
+            f.alpha-color(f.theme-color(primary, nightfall), 0.4)
+            );
+       }
+    }
+}
+
+// Keyframe animations
+@keyframes holographic-glow {
+  0%, 100% {
+    opacity: 0.5;
+    background-position: 0% 50%;
+  }
+  50% {
+    opacity: 0.8;
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes breathing {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.002);
+  }
+}
+
+@keyframes cursor-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Reduced motion support
+@include m.reduce-motion {
+  .narrator,
+  .narrator__mode-btn,
+  .narrator__share {
+    animation: none !important;
+    transition: opacity f.duration(normal) f.ease(ease-out) !important;
+  }
+  
+  .Typewriter__cursor {
+    animation: none !important;
+  }
+}
+
+// High contrast mode
+@include m.high-contrast {
+  .narrator {
+    border: 2px solid f.theme(text-primary, horizon);
+    background: f.theme(background, horizon);
+    
+    &::before {
+      display: none;
+    }
+  }
+  
+  .narrator__mode-btn {
+    border: 2px solid f.theme(text-primary, horizon) !important;
+    
+    &.active {
+      background: f.theme(primary, horizon) !important;
+    }
+  }
+}
