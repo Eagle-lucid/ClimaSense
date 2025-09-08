@@ -138,7 +138,7 @@ $responsive-type-scale: (
 /// Applies a text style from the $text-style map
 /// @param {String} $style - The text style key
 @mixin text-style($style) {
-    $style-map: map.get(v.$text-styles, $style);
+    $style-map: map.get($text-styles, $style);
     @if $style-map {
         font-size: map.get($style-map, font-size);
         line-height: map.get($style-map, line-height);
