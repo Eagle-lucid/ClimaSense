@@ -20,6 +20,7 @@
     border-radius: f.radius(xl);
     margin: f.space(2) f.space(1);
     padding: f.space(2) f.space(1);
+    max-width: 500px;
     position: relative;
     overflow: hidden;
     transition: all f.duration(normal) f.ease(ease-in-out);
@@ -198,6 +199,7 @@
 
     // Responsive adaption
     @include m.respond-down-to(md) {
+        max-width: 200px;
         padding: f.space(2) !important;
 
         &__text {
