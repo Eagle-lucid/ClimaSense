@@ -1,5 +1,5 @@
 // src/components/hero/EssentialCard.jsx
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   IconTemperature,
@@ -11,10 +11,12 @@ import {
 } from '@tabler/icons-react';
 import './EssentialsCard.scss';
 
-const EssentialsCard = ({ weatherData = {}, className = '' }) => {
+const EssentialsCard = ({ weatherData = {}, className = '', location = 'Unknown location' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [height, setHeight] = useState('0px');
   const contentRef = useRef(null);
+  const touchStartY = useRef(0);
 
   // Normalize safe data with proper fallbacks
   const safeData = useMemo(() => ({
@@ -25,6 +27,7 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
     windSpeed: weatherData?.windSpeed ?? null,
     pressure: weatherData?.pressure ?? null,
     aqi: weatherData?.aqi ?? null,
+    icon: weatherData?.icon ?? null,
   }), [weatherData]);
 
   // Essentials list with accessibility and formatting
@@ -32,22 +35,26 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
     { 
       label: 'Feels Like', 
       value: safeData.feelsLike != null ? `${Math.round(safeData.feelsLike)}°C` : '--', 
-      icon: <IconTemperature size={20} aria-hidden="true" />
+      icon: <IconTemperature size={20} aria-hidden="true" className='temperature'/>,
+      element: 'feels-like'
     },
     { 
       label: 'Humidity', 
       value: safeData.humidity != null ? `${safeData.humidity}%` : '--', 
-      icon: <IconDroplet size={20} aria-hidden="true" />
+      icon: <IconDroplet size={20} aria-hidden="true" className='humidity'/>,
+      element: 'humidity'
     },
     { 
       label: 'Wind', 
       value: safeData.windSpeed != null ? `${Math.round(safeData.windSpeed)} km/h` : '--', 
-      icon: <IconWind size={20} aria-hidden="true" />
+      icon: <IconWind size={20} aria-hidden="true" className='wind'/>,
+      element: 'wind'
     },
     { 
       label: 'Pressure', 
       value: safeData.pressure != null ? `${safeData.pressure} hPa` : '--', 
-      icon: <IconGauge size={20} aria-hidden="true" />
+      icon: <IconGauge size={20} aria-hidden="true" className='pressure'/>,
+      element: 'pressure'
     }
   ], [safeData]);
 
@@ -78,7 +85,11 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
   }, [isExpanded]);
 
   // Handlers
-  const handleToggleExpand = () => setIsExpanded(prev => !prev);
+  const handleToggleExpand = () => {
+    setIsAnimating(true);
+    setIsExpanded(prev => !prev);
+    setTimeout(() => setIsAnimating(false), 500);
+  };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -87,17 +98,53 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
     }
   };
 
+  // Swipe detection
+  const handleTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    const touchEndY = e.changedTouches[0].clientY;
+    const diff = touchStartY.current - touchEndY;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && !isExpanded) {
+        handleToggleExpand();
+      } else if (diff < 0 && isExpanded) {
+        handleToggleExpand();
+      }
+    }
+  }
+
   return (
-    <div className={`essentials-card ${className.trim()} ${isExpanded ? 'expanded' : ''}`}>
+    <div className={`essentials-card ${className.trim()} ${isExpanded ? 'expanded' : ''} ${isAnimating ? 'animating' : ''} condition-${safeData.condition?.toLowerCase().replace(/\s+/g, '-') || 'default'}`}
+    data-aqi-category={aqiCategory}
+    onTouchStart={handleTouchStart}
+    onTouchEnd={handleTouchEnd}
+    > 
       {/* Compact view */}
       <div className="essentials-card__compact d-flex justify-content-between align-items-center p-3">
-        <div className="essentials-card__temp">
-          <span className="temp-value display-6 fw-bold">
-            {safeData.temp != null ? `${Math.round(safeData.temp)}°C` : '--'}
-          </span>
-          <span className="temp-condition text-capitalize">
-            {safeData.condition}
-          </span>
+        <div className="essentials-card__primary-info d-flex align-items-center">
+          {/* Weather Icon */}
+          {safeData.icon && (
+            <div className="weather-icon me-3">
+              <img 
+                src={safeData.icon} 
+                alt={safeData.condition}
+                className="img-fluid"
+                style={{ width: '48px', height: '48px' }}
+              />
+            </div>
+          )}
+          
+          <div className="essentials-card__temp-location">
+            <div className="temp-value display-6 fw-bold" aria-live='polite'>
+              {safeData.temp != null ? `${Math.round(safeData.temp)}°C` : '--'}
+            </div>
+            <div className="location text-capitalize small">
+              {location}
+            </div>
+          </div>
         </div>
 
         <button
@@ -113,7 +160,7 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
         </button>
       </div>
 
-      {/* Expanded view */}
+      {/* Expanded view - initially hidden */}
       <div
         ref={contentRef}
         id="essentials-details"
@@ -123,8 +170,12 @@ const EssentialsCard = ({ weatherData = {}, className = '' }) => {
         style={{ height }}
       >
         <div className="essentials-card__details p-3">
+          <div className="condition text-capitalize mb-3 text-center">
+            {safeData.condition}
+          </div>
+          
           {essentials.map((item, index) => (
-            <div key={index} className="essentials-card__detail d-flex align-items-center mb-2">
+            <div key={index} className="essentials-card__detail d-flex align-items-center mb-2" data-element={item.element}>
               <div className="detail-icon me-2 text-muted">{item.icon}</div>
               <div className="detail-info d-flex justify-content-between w-100">
                 <span className="detail-label fw-medium">{item.label}</span>
@@ -165,12 +216,15 @@ EssentialsCard.propTypes = {
     windSpeed: PropTypes.number,
     pressure: PropTypes.number,
     aqi: PropTypes.number,
+    icon: PropTypes.string,
   }),
+  location: PropTypes.string,
   className: PropTypes.string,
 };
 
 EssentialsCard.defaultProps = {
   weatherData: {},
+  location: 'Unknown location',
   className: ''
 };
 
