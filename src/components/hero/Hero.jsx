@@ -17,6 +17,7 @@ const Hero = ({ weatherData, userLocation, essentials }) => {
         <EssentialsCard 
           weatherData={essentials} 
           className="hero__essentials"
+          location={userLocation}  
         />
       </div>
     </section>
