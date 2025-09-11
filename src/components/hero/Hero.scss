@@ -1,0 +1,107 @@
+// src/components/hero/Hero.scss 
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/functions' as f;
+
+// -----------
+// Hero
+// -----------
+.hero {
+  position: relative;
+  min-height: clamp(300px, 50vh, 800px);
+  display: flex;
+  align-items: center;
+  padding: f.space(4) f.space(2);
+  overflow: hidden;
+}
+
+.hero__grid {
+  z-index: 2;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: f.space(4);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+
+  // Stack vertically on mobile 
+  @include m.respond-down-to(lg) {
+    grid-template-columns: 1fr;
+    gap: f.space(2);
+    padding: 0 f.space(2);
+  }
+
+  @include m.respond-down-to(md) {
+    gap: f.space(1);
+    padding: 0 f.space(1);
+  }
+}
+
+// WeatherNarrator Specific positioning
+.hero__grid > :first-child {
+  justify-self: start;
+
+  @include m.respond-down-to(lg) {
+      justify-self: center;
+      width: 100%;
+      max-width: 400px;
+  }
+}
+
+.hero__grid > :last-child {
+  justify-self: end;
+
+  @include m.respond-down-to(lg) {
+      justify-self: center;
+      width: 100%;
+      max-width: 400px;
+  }
+}
+
+@include m.respond-down-to(sm) {
+   .hero {
+    padding: f.space(3) f.space(1);
+   }
+
+   .hero__grid {
+    gap: f.space(3);
+   }
+}
+
+// Special case for very small screens
+@include m.respond-down-to(xs) {
+  .hero {
+    padding: f.space(2) f.space(1);
+  }
+  
+  .hero__grid {
+    gap: f.space(2);
+  }
+}
+
+// Ensure proper layering with background
+.hero__essentials {
+  position: relative;
+  z-index: 3;
+}
+
+// Smooth transitions for layout changes
+.hero__grid {
+  transition: gap f.duration(normal) f.ease(ease-out);
+}
+
+// High contrast mode support
+@include m.high-contrast {
+  .hero__grid {
+    gap: f.space(3);
+  }
+}
+
+// Reduced motion support
+@include m.reduce-motion {
+  .hero__grid {
+    transition: none;
+  }
+}
