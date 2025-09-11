@@ -300,7 +300,7 @@
                     background: linear-gradient(
                       135deg,
                       currentColor 0%,
-                      lighten(map.get(v.$colors, neutral-gray), 20%) 50%,
+                      color.adjust(map.get(v.$colors, neutral-gray), $lightness: 20%) 50%,
                       currentColor 100%
                     );
                     -webkit-background-clip: text;
@@ -312,7 +312,7 @@
               }
         &:not([data-value="--"]) {
                 animation: value-settle 0.8s f.ease(back) forwards, value-pulse 2s ease-in-out infinite;
-                color: lighten(map.get(v.$colors, neutral-gray), 10%);
+                color: color.adjust(map.get(v.$colors, neutral-gray), $lightness: 10%);
 
                 &::before {
                     opacity: 0.5;
