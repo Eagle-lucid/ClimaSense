@@ -19,6 +19,7 @@
   backdrop-filter: blur(20px) saturate(200%);
   border: 1px solid f.alpha-color(map.get(v.$colors, neutral-white), 0.15);
   border-radius: f.radius(xl);
+  margin: 0 f.space(2);
   position: relative;
   overflow: hidden;
   transition: all f.duration(normal) f.ease(back);
@@ -386,11 +387,59 @@
   // Expanded State - Dimensional Shift
   &.expanded {
     @include m.box-shadow(elevation-4);
+    margin: f.space(1);
+    max-height: 500px;
+    max-width: calc(100% + 40px);
+    transition: 
+    transform f.duration(normal) f.ease(back),
+    max-height f.duration(normal) f.ease(back),
+    width f.duration(normal) f.ease(back),
+    margin f.duration(normal) f.ease(back);
+    
     
     &::after {
       opacity: 0.9;
-      animation-duration: 1.5s;
+      animation-duration: 1.2s;
+      background: linear-gradient(
+        45deg,
+        f.alpha-color(f.theme-color(primary, horizon), 0.2),
+        f.alpha-color(f.theme-color(info, horizon), 0.4),
+        f.alpha-color(f.theme-color(primary, horizon), 0.2),
+        f.alpha-color(f.theme-color(warning, horizon), 0.4),
+        f.alpha-color(f.theme-color(primary, horizon), 0.2)
+      );
     }
+
+    // Enable scrolling on details wrapper
+  #{$self}__details-wrapper {
+    overflow-y: auto;
+    max-height: 200px;
+    
+    // Custom scrollbar for Webkit browsers
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+      margin: f.space(1);
+      border-radius: f.radius(pill);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: f.alpha-color(f.theme-color(primary, horizon), 0.3);
+      border-radius: f.radius(pill);
+      border: 1px solid f.alpha-color(map.get(v.$colors, neutral-white), 0.2);
+      
+      &:hover {
+        background: f.alpha-color(f.theme-color(primary, horizon), 0.5);
+      }
+    }
+    
+    // For Firefox
+    scrollbar-width: thin;
+    scrollbar-color: f.alpha-color(f.theme-color(primary, horizon), 0.3) transparent;
+  }
     
     #{$self}__expand-btn {
       transform: rotate(180deg);
