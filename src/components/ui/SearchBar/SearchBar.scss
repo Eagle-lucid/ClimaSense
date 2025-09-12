@@ -4,6 +4,7 @@
 @use '../../../styles/abstracts/variables' as v;
 @use '../../../styles/abstracts/mixins' as m;
 @use '../../../styles/abstracts/functions' as f;
+@use '../../../styles/abstracts/typography' as t;
 
 .search__bar {
     position: relative;
@@ -22,12 +23,12 @@
     @include m.respond-down-to(md) {
         order: 2;
         width: 100%;
-        margin: 0 f.space(1.5);
+        margin: 0 f.space(2.5);
         max-width: 100%;
     }
 
     @include m.respond-down-to(sm) {
-        margin: 0 f.space(1);
+        margin: 0 f.space(2);  
     }
 
     &-form {
@@ -37,6 +38,7 @@
         position: relative;
     }
     &-input {
+        @include t.text-style(body);
         flex: 1;
         padding: f.space(1) f.space(1.5);
         border: v.$border-width solid f.theme(border, horizon);
@@ -81,12 +83,13 @@
 
         // Mobile adjustment 
         @include m.respond-down-to(md) {
-            padding: f.space(1) f.space(1.5);
+            padding: 0 f.space(1);
         }
     }
  
     // Search BTN
     &-btn {
+        @include t.text-style(button);
         padding: f.space(1.5) f.space(2);
         background: map.get(v.$colors, info);
         color: map.get(v.$colors, neutral-white);
@@ -123,6 +126,7 @@
      
     // Geolocation BTN
     &-geo__btn {
+        @include t.text-style(button);
         appearance: none;
         border: 0;
         border-radius: f.radius(pill);
@@ -174,11 +178,10 @@
         border-radius: f.radius(md);
         background: f.alpha-color(map.get(v.$colors, warning), 0.95);
         color: f.contrast-color(f.theme(warning));
-        font-size: map.get(v.$type-scale, md);
-        font-weight: f.weight(medium);
         @include m.box-shadow(elevation-2);
         animation: toast-in 0.3s f.ease(ease-out);
         z-index: f.z(tooltip);
+        @include t.text-style(caption);
 
         @include m.respond-down-to(md) {
             position: fixed;
