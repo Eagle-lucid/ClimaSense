@@ -2,8 +2,7 @@
 import { WeatherProvider } from './context/WeatherContext.jsx';
 import Header from './components/header/Header';
 import Hero from './components/hero/Hero';
-import ForecastList from './components/forecast/ForecastList';
-import ForecastCard from './components/forecast/ForecastCard';
+import WeatherSection from './components/weather/WeatherSection.jsx';
 import useWeather from './context/useWeather';
 import './styles/main.scss';
 
@@ -23,18 +22,11 @@ function MainContent() {
         userLocation={location}
         essentials={weatherData?.current}
       />
-      <section className="forecast-section">
-        <h2>Hourly Forecast</h2>
-        {isLoading ? (
-          <div>Loading...</div>
-        ) : error ? (
-          <div className="error">{error}</div>
-        ) : (
-          <ForecastList forecasts={weatherData?.hourly || []} />
-        )}
-        <h2>Weekly Forecast</h2>
-        <ForecastCard forecasts={weatherData?.daily || []} />
-      </section>
+      <WeatherSection 
+        weatherData={weatherData}
+        isLoading={isLoading}
+        error={error}
+      />
     </div>
   );
 }
