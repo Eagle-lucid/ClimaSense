@@ -1,23 +1,23 @@
-import React from 'react';
+// src/components/forecast/HourlyForecastList.jsx
 import PropTypes from 'prop-types';
 import './HourlyForecastList.scss';
 
 const HourlyForecastList = ({
   forecasts = [],
-  timezone,
   isExpanded,
   onExpand,
   className = '',
   theme = 'dark',
 }) => {
-  const formatHour = (timestamp) => {
-    return new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', timeZone: timezone });
+  
+  const formatHour = (timeString) => {
+    return timeString; 
   };
 
   if (forecasts.length === 0) {
     return (
-      <section className={`hourly-forecast ${className}`} aria-label='Hourly forecast'>
-        <div className="hourly-forecast__empty" aria-live='polite'>
+      <section className={`hourly-forecast ${className}`} aria-label="Hourly forecast">
+        <div className="hourly-forecast__empty" aria-live="polite">
           No hourly forecast data available.
         </div>
       </section>
@@ -26,45 +26,51 @@ const HourlyForecastList = ({
 
   return (
     <section 
-      className={`hourly-forecast hourly-forecast--theme-${theme}
-                ${isExpanded ? 'hourly-forecast--expanded' : ''}
-                ${className}
-              `}
+      className={`
+        hourly-forecast
+        hourly-forecast--theme-${theme}
+        ${isExpanded ? 'hourly-forecast--expanded' : ''}
+        ${className}
+      `}
       aria-label="24-hour weather forecast"
     >
       <header className="hourly-forecast__header">
         <h2 className="hourly-forecast__title">Today's Timeline</h2>
         <button
-          type='button'
-          className='hourly-forecast__expand-btn'
+          type="button"
+          className="hourly-forecast__expand-btn"
           onClick={onExpand}
           aria-expanded={isExpanded}
           aria-label={isExpanded ? 'Collapse hourly forecast' : 'Expand hourly forecast'}
-          >
-            {isExpanded ? '▲' : '▼'}
-          </button>
+        >
+          {isExpanded ? '▲' : '▼'}
+        </button>
       </header>
 
       {isExpanded && (
         <div className="hourly-forecast__scroller">
           <ol className="hourly-forecast__list">
             {forecasts.slice(0, 24).map((hour) => (
-              <li key={hour.dt} className='hourly-forecast__item'>
-                <article className="hourly-capsule"
-                         tabIndex={0}
-                         aria-label={`${formatHour(hour.dt)} : ${hour.temp}°C, ${hour.weather[0].description}`}       
+              <li key={hour.id} className="hourly-forecast__item">
+                <article 
+                  className="hourly-capsule"
+                  tabIndex={0}
+                  aria-label={`${formatHour(hour.time)}: ${hour.temperature}°C, ${hour.condition}`}
                 >
-                  <time dateTime={new Date(hour.dt * 1000).toISOString()}  className="hourly-capsule__time">
-                    {formatHour(hour.dt)}
+                  <time className="hourly-capsule__time">
+                    {formatHour(hour.time)}
                   </time>
-                  <img src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`} alt={hour.weather[0].description}
-                      className='hourly-capsule__icon' loading='lazy' 
+                  <img 
+                    src={hour.icon} 
+                    alt={hour.condition} 
+                    className="hourly-capsule__icon"
+                    loading="lazy"
                   />
                   <div className="hourly-capsule__temp">
-                    {Math.round(hour.temp)}°C
+                    {Math.round(hour.temperature)}°C
                   </div>
-                  <div className="hourly-capsule__pop" aria-label={`${hour.pop * 100}% chance of precipitation`}>
-                    💧 {Math.round(hour.pop * 100)}%
+                  <div className="hourly-capsule__pop" aria-label={`${Math.round((hour.pop || 0) * 100)}% chance of precipitation`}>
+                    💧 {Math.round((hour.pop || 0) * 100)}%
                   </div>
                 </article>
               </li>
@@ -78,15 +84,13 @@ const HourlyForecastList = ({
 
 HourlyForecastList.propTypes = {
   forecasts: PropTypes.arrayOf(PropTypes.shape({
-    dt: PropTypes.number.isRequired,        
-    temp: PropTypes.number.isRequired,      
-    weather: PropTypes.arrayOf(PropTypes.shape({
-      icon: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-    })).isRequired,
-    pop: PropTypes.number,                  
+    id: PropTypes.number.isRequired,
+    time: PropTypes.string.isRequired,
+    temperature: PropTypes.number.isRequired,
+    condition: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
+    pop: PropTypes.number, 
   })),
-  timezone: PropTypes.string.isRequired,
   isExpanded: PropTypes.bool,
   onExpand: PropTypes.func,
   className: PropTypes.string,
