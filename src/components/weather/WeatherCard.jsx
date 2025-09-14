@@ -15,7 +15,7 @@ const WeatherCard = ({
   temperature,
   feelsLike,
   condition,
-  iconCode,
+  iconCode, // This should be the FULL URL from WeatherAPI.com
 
   // Detailed Metrics
   humidity,
@@ -35,11 +35,11 @@ const WeatherCard = ({
   // Theming
   theme = 'dark',
 }) => {
-  // Derived State for the 'Temporal' feel - NOW BASED ON FORECAST TIMEZONE!
+  // Derived State for the 'Temporal' feel
   const [localTime, setLocalTime] = useState('--:--');
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Update time every minute BASED ON THE FORECAST'S TIMEZONE
+  // Update time every minute
   useEffect(() => {
     if (!timestamp || !timezone) return;
 
@@ -58,11 +58,10 @@ const WeatherCard = ({
       }
     };
 
-    updateTime(); // Update immediately
-    const intervalId = setInterval(updateTime, 60000); // Update every minute
-
+    updateTime();
+    const intervalId = setInterval(updateTime, 60000);
     return () => clearInterval(intervalId);
-  }, [timestamp, timezone]); // Re-run if timestamp or timezone changes
+  }, [timestamp, timezone]);
 
   // Handle the expansion animation sequence
   useEffect(() => {
@@ -78,7 +77,7 @@ const WeatherCard = ({
     onExpand?.();
   };
 
-  // Handler for favorite action (prevents triggering the main card click)
+  // Handler for favorite action
   const handleFavoriteClick = (e) => {
     e.stopPropagation();
     onAddFavorite?.();
@@ -90,8 +89,14 @@ const WeatherCard = ({
     onCompare?.();
   };
 
-  // Format the icon URL
-  const getIconUrl = (code) => `https://openweathermap.org/img/wn/${code}@2x.png`;
+  // ✅ FIXED: WeatherAPI.com provides complete URLs, no need to construct them
+  // If iconCode is a full URL, use it directly. If it's just a code, use OpenWeatherMap format.
+  const getIconUrl = (code) => {
+    if (code?.startsWith('http') || code?.startsWith('//')) {
+      return code; // Already a full URL from WeatherAPI.com
+    }
+    return `https://openweathermap.org/img/wn/${code}@2x.png`; // Fallback for OpenWeatherMap codes
+  };
 
   // Determine AQI category
   const getAqiCategory = (aqiValue) => {
@@ -139,10 +144,14 @@ const WeatherCard = ({
       <div className="weather-capsule__main">
         {iconCode && (
           <img
-            src={getIconUrl(iconCode)} // FIXED: Call the function with iconCode
+            src={getIconUrl(iconCode)} // ✅ Now handles both URL formats
             alt={condition || ''}
             className="weather-capsule__icon"
             loading="lazy"
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.target.style.display = 'none';
+            }}
           />
         )}
         <div className="weather-capsule__temps">
@@ -250,7 +259,7 @@ WeatherCard.propTypes = {
   temperature: PropTypes.number,
   feelsLike: PropTypes.number,
   condition: PropTypes.string,
-  iconCode: PropTypes.string,
+  iconCode: PropTypes.string, // Can be OpenWeatherMap code or WeatherAPI.com full URL
   humidity: PropTypes.number,
   windSpeed: PropTypes.number,
   pressure: PropTypes.number,
