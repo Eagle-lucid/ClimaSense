@@ -1,19 +1,20 @@
 // src/components/weather/WeatherSection.jsx
 import { useState } from 'react';
 import WeatherCard from './WeatherCard';
-import HourlyForecastList from '../forecast/DailyForecast';
-import  DailyForecastCard  from '../forecast/DailyForecast';
+import HourlyForecastList from '../forecast/HourlyForecast';
+import DailyForecastCard from '../forecast/DailyForecast';
 import './WeatherSection.scss';
 
-const WeatherSection = ({ weatherData, isLoading, error }) => {
+const WeatherSection = ({ weatherData, isLoading, error, locationQuery }) => {
     const [expandedCardId, setExpandedCardId] = useState('current-weather-capsule');
 
     const handleToggleExpand = (cardId) => {
         setExpandedCardId(prevId => prevId === cardId ? null : cardId);
     };
+
     if (isLoading) {
         return (
-            <section className='weather-section weather-section__loading'>
+            <section className='weather-section weather-section--loading'>
                 <div className="spinner-border text-light" role='status'>
                     <span className='visually-hidden'>Loading...</span>
                 </div>
@@ -21,47 +22,54 @@ const WeatherSection = ({ weatherData, isLoading, error }) => {
             </section>
         );
     }
+
     if (error) {
         return (
-         <section className="weather-section weather-section__error">
-            <div className="alert alert-warning m-0" role='alert'>
-                <strong>Temporal Disruption!</strong>
-                Unable to retrieve weather data: {error}
-            </div>
-         </section>
+            <section className="weather-section weather-section--error">
+                <div className="alert alert-warning m-0" role='alert'>
+                    <strong>Temporal Disruption!</strong>
+                    Unable to retrieve weather data: {error}
+                </div>
+            </section>
         );
     }
 
     if (!weatherData?.current) {
         return (
-            <section className="weather-section weather-section__empty">
+            <section className="weather-section weather-section--empty">
                 <p>No chrono-data available for the selected coordinates.</p>
             </section>
         );
     }
 
-    const { current, location, hourly, daily } = weatherData;
+    
+    const current = weatherData?.current || {};
+    const hourly = weatherData?.hourly || [];     // Already correct in your API
+    const daily = weatherData?.daily || [];       // Already correct in your API
 
+
+    const locationName = daily[0]?.location || locationQuery || 'Current Location';
+    const locationCountry = '';
 
     return (
         <section className="weather-section">
             {/* Main Weather Capsule */}
             <div className="weather-section__primary">
                 <WeatherCard 
-                  id="current-weather-capsule"
-                    locationName={location?.name}
-                    locationCountry={location?.country}
-                    timestamp={current?.dt}
-                    timezone={location?.timezone}
+                    id="current-weather-capsule"
+                    locationName={locationName}
+                    locationCountry={locationCountry}
+                    timestamp={Date.now() / 1000} 
+                    timezone={Intl.DateTimeFormat().resolvedOptions().timeZone} 
                     temperature={current?.temp}
-                    feelsLike={current?.feels_like}
-                    condition={current?.weather[0]?.description}
-                    iconCode={current?.weather[0]?.icon}
+                    feelsLike={current?.feelsLike} 
+                    condition={current?.condition}
+                    iconCode={current?.icon}
                     humidity={current?.humidity}
-                    windSpeed={current?.wind_speed}
+                    windSpeed={current?.windSpeed} 
                     pressure={current?.pressure}
-                    uvIndex={current?.uvi}
-                    aqi={current?.air_quality?.pm2_5}
+                    uvIndex={current?.uvIndex} 
+                    aqi={current?.aqi} 
                     isExpanded={expandedCardId === "current-weather-capsule"}
                     onExpand={() => handleToggleExpand("current-weather-capsule")}
                     onAddFavorite={() => { }} 
@@ -70,15 +78,15 @@ const WeatherSection = ({ weatherData, isLoading, error }) => {
                 />
             </div>
 
-            {/* Forecast Section */}
+            {/* Forecast Sections */}
             {(hourly && hourly.length > 0) && (
                 <div className="weather-section__hourly mt-4">
                     <HourlyForecastList
-                       forecasts={hourly}
-                       timezone={location.timezone}
-                       isExpanded={expandedCardId === 'hourly-forecast'}
-                       onExpand={() => handleToggleExpand('hourly-forecast')}
-                       theme='dark'
+                        forecasts={hourly}
+                        timezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
+                        isExpanded={expandedCardId === 'hourly-forecast'}
+                        onExpand={() => handleToggleExpand('hourly-forecast')}
+                        theme='dark'
                     />
                 </div>
             )}
@@ -87,7 +95,7 @@ const WeatherSection = ({ weatherData, isLoading, error }) => {
                 <div className="weather-section__daily mt-4">
                     <DailyForecastCard 
                         forecasts={daily}
-                        timezone={location.timezone}
+                        timezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
                         isExpanded={expandedCardId === 'daily-forecast'}
                         onExpand={() => handleToggleExpand('daily-forecast')}
                         theme='dark'
