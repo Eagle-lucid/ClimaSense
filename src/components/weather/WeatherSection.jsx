@@ -83,7 +83,6 @@ const WeatherSection = ({ weatherData, isLoading, error, locationQuery }) => {
                 <div className="weather-section__hourly mt-4">
                     <HourlyForecastList
                         forecasts={hourly}
-                        timezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
                         isExpanded={expandedCardId === 'hourly-forecast'}
                         onExpand={() => handleToggleExpand('hourly-forecast')}
                         theme='dark'
@@ -95,7 +94,6 @@ const WeatherSection = ({ weatherData, isLoading, error, locationQuery }) => {
                 <div className="weather-section__daily mt-4">
                     <DailyForecastCard 
                         forecasts={daily}
-                        timezone={Intl.DateTimeFormat().resolvedOptions().timeZone}
                         isExpanded={expandedCardId === 'daily-forecast'}
                         onExpand={() => handleToggleExpand('daily-forecast')}
                         theme='dark'
