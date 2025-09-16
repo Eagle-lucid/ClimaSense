@@ -209,7 +209,7 @@ body.theme-nightfall .header__title {
 
 .header__unit-toggle,
 .header__theme-toggle {
-    @include t.text-style(buttons);
+    @include t.text-style(button);
     @include m.flex-container(row, center, center);
     gap: f.space(1);
     padding: f.space(1.5) f.space(2.5);
