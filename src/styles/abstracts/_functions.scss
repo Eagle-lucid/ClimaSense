@@ -62,7 +62,12 @@
 // COLOR FUNCTIONS (refined)
 // --------------------------------------------------
 @function is-light($color) {
-    @return math.div(red($color) * 0.299 + green($color) * 0.587 + blue($color) * 0.114, 255) > 0.6;
+    @return math.div(
+      color.channel($color, "red", $space: rgb) * 0.299 +
+      color.channel($color, "green", $space: rgb) * 0.587 +
+      color.channel($color, "blue", $space: rgb) * 0.114,
+      255
+    ) > 0.6;
 }
 
 @function contrast-color($color, $light: #000, $dark: #fff ) {
@@ -71,6 +76,9 @@
 
 /// Creates a transparent version of a color using alpha (0-1)
 @function alpha-color($color, $alpha) {
+    @if type-of($alpha) == string and str-index($alpha, "var(") {
+    @return rgba($color, $alpha); // will compile to: rgba(color, var(--alpha))
+  }
     @if $alpha < 0 or $alpha > 1 {
         @error 'Alpha value must be between 0 and 1.';
     }
