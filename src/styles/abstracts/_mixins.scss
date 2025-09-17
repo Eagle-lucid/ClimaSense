@@ -181,12 +181,12 @@
     $focus-color: f.get-token(v.$colors, $color-key, 'focus(#{$color-key})');
     outline: 2px solid $focus-color;
     outline-offset: 2px;
-    box-shadow: 0 0 0 3px alpha-color($focus-color, 0.3);
+    box-shadow: 0 0 0 3px f.alpha-color($focus-color, 0.3);
     transition: outline-offset 0.2s ease, box-shadow 0.2s ease;
     
     &:focus {
         outline-offset: 4px;
-        box-shadow: 0 0 0 4px alpha-color($focus-color, 0.5);
+        box-shadow: 0 0 0 4px f.alpha-color($focus-color, 0.5);
     }
     
     &:focus:not(:focus-visible) {
@@ -213,7 +213,7 @@
 }
 
 @mixin smooth-transition($properties: all, $time: 300ms, $easing: ease-in-out) {
-  transition: #{join($properties, ', ')} #{$time} #{$easing};
+  transition: #{list.join($properties, ', ')} #{$time} #{$easing};
 }
 
 @mixin gradient-text($start-color, $end-color, $direction: to right) {
