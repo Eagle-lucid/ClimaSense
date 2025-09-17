@@ -43,7 +43,8 @@ $colors: (
   warning: #FF6B35,  
   neutral-white: #FFFFFF,
   neutral-black: #000000,
-  neutral-gray: #9E9E9E
+  neutral-gray: #9E9E9E,
+  transparent: transparent
 );
 
 $themes: (
@@ -108,12 +109,6 @@ $border-radius: (
 // TYPOGRAPHY
 $font-size-base: 1rem; // 16px
 $line-height-base: 1.5; // 24px
-$font-weights: (
-  light: 300,
-  normal: 400,
-  medium: 500,
-  bold: 700
-);
 
 // TYPE SCALE 
 // ---------------------------------
