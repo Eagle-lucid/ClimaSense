@@ -17,7 +17,7 @@
         f.theme-color(day-sky-end)
     );
 
-    @include m.smooth-transition(background 1s);
+    @include m.smooth-transition(background, 1s);
 
     // ---------------
     // Time of Day
