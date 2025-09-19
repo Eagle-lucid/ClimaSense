@@ -1,0 +1,418 @@
+// src/components/weather/WeatherSection.scss
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:list';
+@use 'sass:color';
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/functions' as f;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/typography' as t;
+
+// ===== DESIGN TOKEN MAPS =====
+$weather-section: (
+  // Layout
+  gap-base: f.space(4),
+  gap-compact: f.space(2),
+  gap-expanded: f.space(6),
+  padding: f.space(4),
+  padding-mobile: f.space(3),
+  
+  // Animation
+  transition-duration: f.duration(normal),
+  transition-easing: f.ease(ease-out),
+  magnetic-repulsion: 20px,
+  
+  // Responsive breakpoints
+  compact-layout: 768px,
+  single-column: 480px,
+  
+  // Visual effects
+  backdrop-blur: 12px,
+  backdrop-saturate: 140%,
+  border-opacity: 0.12,
+  surface-opacity: 0.08,
+  
+  // Contextual framing
+  frame-gradient: linear-gradient(
+    135deg,
+    f.alpha-color(f.theme(primary, horizon), 0.1) 0%,
+    f.alpha-color(f.theme(info, horizon), 0.05) 50%,
+    f.alpha-color(f.theme(accent, horizon), 0.1) 100%
+  ),
+  
+  // Loading states
+  loading-pulse-duration: 1.5s,
+  loading-shimmer-duration: 2s
+);
+
+// ===== HELPER FUNCTIONS =====
+@function get-section-token($key) {
+  @return map.get($weather-section, $key);
+}
+
+@function calculate-magnetic-offset($is-expanded) {
+  @return if($is-expanded, get-section-token(magnetic-repulsion), 0px);
+}
+
+// ===== KEYFRAME ANIMATIONS =====
+@keyframes temporal-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes chrono-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes gallery-curate {
+  from { 
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chrono-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes fade-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse-sweep {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.05); }
+}
+
+// ===== COMPONENT STYLES =====
+.weather-section {
+  // ===== TEMPORAL THEATER FOUNDATION =====
+  display: grid;
+  grid-template-columns: minmax(auto, max-content);
+  gap: get-section-token(gap-base);
+  padding: get-section-token(padding);
+  position: relative;
+  isolation: isolate;
+  
+  // Contextual Framing - Art Gallery Background
+  &::before {
+    content: '';
+    @include m.position-abs-fill;
+    background: get-section-token(frame-gradient);
+    border-radius: f.radius(xl);
+    z-index: -2;
+    opacity: 0;
+    transition: opacity get-section-token(transition-duration) get-section-token(transition-easing);
+  }
+  
+  &:hover::before {
+    opacity: 1;
+  }
+
+  // ===== LAYOUT STATES =====
+    &--loading { 
+      @include m.flex-container(column, center, center, nowrap, 2); 
+      min-height: 300px; 
+      color: map.get(v.$colors, neutral-gray); 
+      
+      .spinner-border { 
+        animation: temporal-pulse get-section-token(loading-pulse-duration) ease-in-out infinite; 
+      } 
+      
+      p { 
+        @include t.text-style(body); 
+        opacity: 0.8; position: relative; 
+        
+        &::after { 
+          content: ''; 
+          position: absolute; 
+          bottom: -4px; 
+          left: 0; 
+          width: 100%; 
+          height: 2px; 
+          background: linear-gradient( 
+            90deg, 
+            transparent, 
+            f.theme(primary, horizon), transparent );
+          background-size: 200% 100%;
+          animation: chrono-shimmer get-section-token(loading-shimmer-duration) ease-in-out infinite; 
+        } 
+      } 
+    }
+
+  &--error {
+    .alert {
+      @include m.card(3, elevation-1);
+      @include t.text-style(caption);
+      border: 1px solid f.alpha-color(f.theme(warning, horizon), 0.3);
+      background: f.alpha-color(f.theme(warning, horizon), 0.1);
+      -webkit-backdrop-filter: blur(get-section-token(backdrop-blur));
+      backdrop-filter: blur(get-section-token(backdrop-blur));
+    }
+  }
+
+  &--empty {
+    @include m.flex-container(column, center, center, nowrap, 2);
+    min-height: 200px;
+    color: f.theme(text-secondary, horizon);
+    text-align: center;
+    
+    p {
+      @include t.text-style(body);
+      opacity: 0.7;
+    }
+  }
+
+  // ===== PRIMARY WEATHER CAPSULE =====
+  &__primary {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(100%, 420px);
+    transition: all get-section-token(transition-duration) get-section-token(transition-easing);
+    
+    // Magnetic Layout - Repel other components when expanded
+    .weather-capsule--expanded ~ .weather-section__hourly &,
+    .weather-capsule--expanded ~ .weather-section__daily & {
+      margin-bottom: calculate-magnetic-offset(true);
+    }
+  }
+
+  // ===== FORECAST SECTIONS =====
+  &__hourly {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: f.space(2);
+
+  > * {
+    scroll-snap-align: start;
+  }
+}
+
+  &__hourly,
+  &__daily {
+    grid-column: 1 / -1;
+    transition: all get-section-token(transition-duration) get-section-token(transition-easing);
+    
+    // Orchestrated Transitions - Coordinate with sibling animations
+    animation: gallery-curate 0.6s get-section-token(transition-easing) both;
+    
+    // Stagger animations for visual harmony
+    &:nth-child(2) { animation-delay: 0.1s; }
+    &:nth-child(3) { animation-delay: 0.2s; }
+    
+    // Magnetic Layout - Respond to sibling expansion
+    .weather-section__hourly:has(.hourly-forecast--expanded) ~ &,
+    .weather-section__daily:has(.daily-forecast--expanded) ~ & {
+      margin-top: calculate-magnetic-offset(true);
+    }
+  }
+
+  // ===== RESPONSIVE DESIGN - CONCERT HALL ACOUSTICS =====
+  // For larger screens - create a more orchestrated layout
+  @include m.respond-to(md) {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    align-items: start;
+    
+    &__primary {
+      grid-column: 1 / -1;
+      justify-self: center;
+    }
+    
+    &__hourly {
+      grid-column: 1 / 2;
+      grid-row: 2 / 3;
+    }
+    
+    &__daily {
+      grid-column: 2 / 3;
+      grid-row: 2 / 3;
+    }
+    
+    // Adjust magnetic repulsion for grid layout
+    .weather-capsule--expanded ~ .weather-section__hourly &,
+    .weather-capsule--expanded ~ .weather-section__daily & {
+      margin-bottom: 0;
+      margin-top: calculate-magnetic-offset(true);
+    }
+  }
+
+  // For extra large screens - Mission Control layout
+  @include m.respond-to(lg) {
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: auto auto;
+    
+    &__primary {
+      grid-column: 1 / 2;
+      grid-row: 1 / 2;
+      justify-self: start;
+    }
+    
+    &__hourly {
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
+    
+    &__daily {
+      grid-column: 1 / -1;
+      grid-row: 2 / 3;
+    }
+  }
+
+  @include m.respond-to(sm) {
+  $mobile-repel: 10px;
+  .weather-capsule--expanded {
+    margin-bottom: $mobile-repel;
+  }
+}
+
+
+  // ===== CONTAINER QUERY READY =====
+  // Future-proof layout adjustments based on container size
+  @container style(--layout: compact) {
+    gap: get-section-token(gap-compact);
+    padding: get-section-token(padding-mobile);
+    
+    &::before {
+      opacity: 0.5; // More subtle framing in compact mode
+    }
+  }
+
+  // ===== REDUCED MOTION SUPPORT =====
+  @include m.reduce-motion {
+    &::before {
+      transition: none;
+      opacity: 0.3; // Static subtle framing
+    }
+    
+    &__hourly,
+    &__daily {
+      animation: none;
+    }
+    
+    // Disable magnetic layout animations
+    .weather-capsule--expanded ~ .weather-section__hourly &,
+    .weather-capsule--expanded ~ .weather-section__daily &,
+    .weather-section__hourly:has(.hourly-forecast--expanded) ~ &,
+    .weather-section__daily:has(.daily-forecast--expanded) ~ & {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  // ===== HIGH CONTRAST SUPPORT =====
+  @include m.high-contrast {
+    &::before {
+      background: transparent;
+      border: 2px solid #fff;
+    }
+    
+    gap: f.space(2); // Increased spacing for clarity
+  }
+
+  // ===== DARK THEME ADJUSTMENTS =====
+  :root[data-theme='nightfall'] &,
+  body.theme-nightfall & {
+    &::before {
+      background: linear-gradient(
+        135deg,
+        f.alpha-color(f.theme(primary, nightfall), 0.15) 0%,
+        f.alpha-color(f.theme(info, nightfall), 0.08) 50%,
+        f.alpha-color(f.theme(accent, nightfall), 0.15) 100%
+      );
+    }
+  }
+}
+
+// ===== FALLBACKS FOR LEGACY BROWSERS =====
+@supports not (grid-template-columns: minmax(auto, max-content)) {
+  .weather-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    & > * {
+      width: min(100%, 420px);
+      margin-bottom: get-section-token(gap-base);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// ===== PRINT STYLES =====
+@media print {
+  .weather-section {
+    display: block !important;
+    padding: 0;
+    
+    &::before {
+      display: none;
+    }
+    
+    & > * {
+      break-inside: avoid;
+      margin-bottom: f.space(3);
+      width: 100% !important;
+    }
+    
+    // Ensure all weather components are expanded for printing
+    .weather-capsule,
+    .hourly-forecast,
+    .daily-forecast {
+      &--expanded {
+        max-height: none !important;
+      }
+    }
+  }
+}
+
+// ===== UTILITY CLASSES FOR JS CONTROL =====
+.weather-section {
+  &--layout-compact {
+    --layout: compact;
+    gap: get-section-token(gap-compact);
+  }
+  
+  &--layout-expanded {
+    gap: get-section-token(gap-expanded);
+  }
+  
+  &--focus-hourly {
+    .weather-section__hourly {
+      outline: 2px solid f.theme(primary, horizon);
+      outline-offset: 4px;
+    }
+  }
+  
+  &--focus-daily {
+    .weather-section__daily {
+      outline: 2px solid f.theme(info, horizon);
+      outline-offset: 4px;
+    }
+  }
+
+  :root[data-theme='nightfall'] &,
+  body.theme-nightfall & {
+    &::before {
+      background: linear-gradient(
+        135deg,
+        f.alpha-color(f.theme(primary, nightfall), 0.1) 0%,
+        f.alpha-color(f.theme(accent, nightfall), 0.08) 50%,
+        f.alpha-color(f.theme(info, nightfall), 0.12) 100%
+      );
+      box-shadow: 0 0 20px f.alpha-color(f.theme(primary, nightfall), 0.25);
+    }
+  }
+}
