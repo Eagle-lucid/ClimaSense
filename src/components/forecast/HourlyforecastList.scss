@@ -1,0 +1,475 @@
+// src/components/forecast/HourlyForecastList.scss
+@use 'sass:map';
+@use 'sass:color';
+@use 'sass:list';
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/functions' as f;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/typography' as t;
+
+// ===== DESIGN TOKEN MAPS =====
+$hourly-forecast: (
+  // Carousel layout
+  item-width: 90px,
+  item-height: 130px,
+  item-gap: f.space(2),
+  item-padding: f.space(2),
+  visible-items: 4,
+  
+  // Navigation
+  nav-button-size: 40px,
+  nav-button-offset: -20px,
+  nav-arrow-size: 20px,
+  
+  // Expanded state
+  expanded-item-width: 100px,
+  expanded-item-height: 150px,
+  expanded-visible-items: 5,
+  
+  // Visual effects
+  gradient-opacity: 0.3,
+  border-opacity: 0.2,
+  active-scale: 1.08,
+  
+  // Animation
+  scroll-transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  item-transition: all 0.3s ease,
+  
+  // Responsive
+  mobile-item-width: 80px,
+  mobile-item-height: 120px,
+  mobile-visible-items: 3,
+  compact-breakpoint: 480px
+);
+
+// ===== HELPER FUNCTIONS =====
+@function get-forecast-token($key) {
+  @return map.get($hourly-forecast, $key);
+}
+
+@function calculate-visible-width() {
+  $item-width: get-forecast-token(item-width);
+  $item-gap: get-forecast-token(item-gap);
+  $visible-items: get-forecast-token(visible-items);
+
+  @return calc(#{$item-width} * #{$visible-items} + #{$item-gap} * (#{$visible-items - 1}));
+}
+
+
+// ===== KEYFRAME ANIMATIONS =====
+@keyframes carousel-slide {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes nav-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes scroll-hint {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+// ===== COMPONENT STYLES =====
+.hourly-forecast {
+  // ===== CAROUSEL CONTAINER =====
+  position: relative;
+  isolation: isolate;
+  border-radius: f.radius(xl);
+  background: f.alpha-color(f.theme(surface-2, horizon), 0.1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid f.alpha-color(f.theme(border, horizon), 0.15);
+  @include m.box-shadow(elevation-2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  max-width: calculate-visible-width();
+  margin: 0 auto;
+
+  &--theme-dark {
+    background: f.alpha-color(f.theme(surface-1, nightfall), 0.08);
+    border-color: f.alpha-color(f.theme(border, nightfall), 0.15);
+  }
+
+  // ===== HEADER WITH NAVIGATION =====
+  &__header {
+    @include m.flex-container(row, space-between, center, nowrap, 2);
+    padding: f.space(3);
+    border-bottom: 1px solid f.alpha-color(f.theme(border, horizon), 0.1);
+    position: relative;
+  }
+
+  &__title {
+    @include t.text-style(heading-3);
+    margin: 0;
+    color: f.theme(text-primary, horizon);
+    font-weight: f.weight(semi-bold);
+  }
+
+  &__nav-controls {
+    @include m.flex-container(row, center, center, nowrap, 1);
+  }
+
+  &__nav-button {
+    @include m.flex-container(row, center, center);
+    width: get-forecast-token(nav-button-size);
+    height: get-forecast-token(nav-button-size);
+    border-radius: f.radius(pill);
+    background: f.alpha-color(f.theme(surface-1, horizon), 0.3);
+    border: 1px solid f.alpha-color(f.theme(border, horizon), 0.2);
+    color: f.theme(text-primary, horizon);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    
+    &:hover {
+      background: f.alpha-color(f.theme(surface-1, horizon), 0.5);
+      transform: translateY(-1px);
+      @include m.box-shadow(elevation-1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+    
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      
+      &:hover {
+        background: f.alpha-color(f.theme(surface-1, horizon), 0.3);
+        @include m.box-shadow(elevation-0);
+      }
+    }
+    
+    &--prev::before {
+      content: '←';
+      font-size: get-forecast-token(nav-arrow-size);
+      font-weight: f.weight(bold);
+    }
+    
+    &--next::before {
+      content: '→';
+      font-size: get-forecast-token(nav-arrow-size);
+      font-weight: f.weight(bold);
+    }
+  }
+
+  // ===== CAROUSEL TRACK =====
+  &__carousel {
+    position: relative;
+    padding: f.space(3) get-forecast-token(nav-button-size);
+  }
+
+  &__track {
+    position: relative;
+    overflow: hidden;
+  }
+
+  // ===== SCROLLER WITH VISUAL CUES =====
+  &__scroller {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 get-forecast-token(item-width);
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    overscroll-behavior: contain;
+    will-change: transform;
+    padding: f.space(1) 0;
+    
+    // Hide scrollbars but maintain functionality
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    
+    // Scroll hint indicator
+    &:not(:hover)::after {
+      content: '';
+      @include t.text-style(caption);
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      color: f.alpha-color(f.theme(text-primary, horizon), 0.6);
+      animation: scroll-hint 2s ease-in-out infinite;
+      pointer-events: none;
+    }
+  }
+
+  // ===== CAROUSEL LIST =====
+  &__list {
+    @include m.flex-container(row, flex-start, stretch, nowrap, 2);
+    margin: 0;
+    padding: 0 f.space(2);
+    list-style: none;
+    min-width: min-content;
+  }
+
+  // ===== CAROUSEL ITEM =====
+  &__item {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    flex: 0 0 auto;
+    animation: carousel-slide 0.6s ease-out both;
+    
+    // Staggered entrance animation
+    @for $i from 1 through 24 {
+      &:nth-child(#{$i}) {
+        animation-delay: $i * 0.05s;
+      }
+    }
+  }
+
+  // ===== HOURLY CAPSULE - CAROUSEL SLIDE =====
+  .hourly-capsule {
+    // ===== SLIDE DESIGN =====
+    width: get-forecast-token(item-width);
+    height: get-forecast-token(item-height);
+    padding: get-forecast-token(item-padding);
+    background: f.alpha-color(f.theme(surface-2, horizon), 0.2);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 2px solid f.alpha-color(f.theme(border, horizon), 0.25);
+    border-radius: f.radius(lg);
+    @include m.flex-container(column, space-between, center, nowrap, 1.5);
+    transition: get-forecast-token(item-transition);
+    position: relative;
+    cursor: pointer;
+    will-change: transform, opacity;
+
+    // Current hour highlight
+    &[data-current="true"] {
+      background: f.alpha-color(f.theme(primary, horizon), 0.25);
+      border-color: f.alpha-color(f.theme(primary, horizon), 0.4);
+      transform: scale(get-forecast-token(active-scale));
+      z-index: f.z(content);
+      @include m.box-shadow(elevation-2);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 20px;
+        height: 3px;
+        background: f.theme(primary, horizon);
+        border-radius: f.radius(pill);
+      }
+    }
+
+    // Hover state
+    &:hover {
+      transform: translateY(-6px) scale(1.02);
+      background: f.alpha-color(f.theme(surface-2, horizon), 0.3);
+      @include m.box-shadow(elevation-3);
+      z-index: f.z(overlay);
+    }
+
+    // Active state
+    &:active {
+      transform: translateY(-3px) scale(0.98);
+    }
+
+    // Focus state
+    &:focus-visible {
+      @include m.focus(primary);
+      outline-offset: 3px;
+      z-index: f.z(overlay);
+    }
+
+    // ===== SLIDE CONTENT =====
+    &__time {
+      @include t.text-style(caption);
+      font-weight: f.weight(semi-bold);
+      color: f.theme(text-primary, horizon);
+      text-align: center;
+      font-feature-settings: 'tnum' on;
+      opacity: 0.9;
+    }
+
+    &__icon {
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+      transition: all 0.3s ease;
+      
+      .hourly-capsule:hover & {
+        transform: scale(1.3) rotate(5deg);
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+      }
+    }
+
+    &__temp {
+      @include t.text-style(body);
+      font-weight: f.weight(bold);
+      color: f.theme(text-primary, horizon);
+      font-feature-settings: 'tnum' on;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    &__pop {
+      @include t.text-style(caption);
+      color: f.theme(info, horizon);
+      opacity: 0.9;
+      font-size: 0.75rem;
+      font-weight: f.weight(medium);
+      
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  // ===== EXPANDED STATE =====
+  &--expanded {
+    max-width: none;
+    
+    .hourly-capsule {
+      width: get-forecast-token(expanded-item-width);
+      height: get-forecast-token(expanded-item-height);
+    }
+  }
+
+  // ===== EMPTY STATE =====
+  &__empty {
+    @include m.flex-container(column, center, center, nowrap, 1.5);
+    padding: f.space(6);
+    color: f.theme(text-secondary, horizon);
+    @include t.text-style(body);
+    text-align: center;
+    min-height: 200px;
+  }
+
+  // ===== RESPONSIVE DESIGN =====
+  @include m.respond-down-to(md) {
+    max-width: none;
+    margin: 0 f.space(2);
+    
+    &__header {
+      padding: f.space(2);
+    }
+    
+    &__carousel {
+      padding: f.space(2) f.space(1);
+    }
+    
+    .hourly-capsule {
+      width: get-forecast-token(mobile-item-width);
+      height: get-forecast-token(mobile-item-height);
+      
+      &__icon {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  @include m.respond-down-to(sm) {
+    margin: 0 f.space(1);
+    
+    &__nav-button {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .hourly-capsule {
+      width: 75px;
+      height: 115px;
+      padding: f.space(1.5);
+      
+      &__time {
+        font-size: 0.75rem;
+      }
+      
+      &__temp {
+        @include t.text-style(body-sm);
+      }
+    }
+  }
+
+  // ===== ACCESSIBILITY =====
+  @include m.reduce-motion {
+    &__scroller {
+      scroll-behavior: auto;
+    }
+    
+    &__list {
+      animation: none;
+    }
+    
+    .hourly-capsule {
+      animation: none;
+      transition: opacity 0.3s ease;
+      
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+
+  // ===== BROWSER FALLBACKS =====
+  @supports not (scroll-snap-type: x mandatory) {
+    &__scroller {
+      scroll-padding: 0;
+    }
+  }
+}
+
+// ===== NAVIGATION ENHANCEMENTS =====
+.hourly-forecast {
+  &__nav-button {
+    // Pulse animation for navigation hints
+    &:not(:disabled) {
+      animation: nav-pulse 2s ease-in-out infinite;
+    }
+  }
+}
+
+// ===== CAROUSEL INDICATORS (Optional) =====
+.hourly-forecast__indicators {
+  @include m.flex-container(row, center, center, nowrap, 1);
+  padding: f.space(2);
+  margin-top: f.space(1);
+  
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: f.alpha-color(f.theme(text-primary, horizon), 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    
+    &:hover {
+      background: f.alpha-color(f.theme(primary, horizon), 0.6);
+      transform: scale(1.2);
+    }
+    
+    &--active {
+      background: f.theme(primary, horizon);
+      transform: scale(1.3);
+    }
+  }
+}
