@@ -118,6 +118,7 @@ $day-colors: (
 .daily-forecast {
   // ===== WEATHER CHRONICLE FOUNDATION =====
   background: f.alpha-color(f.theme(surface-2, horizon), get-daily-token(surface-opacity));
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 1px solid f.alpha-color(f.theme(border, horizon), get-daily-token(border-opacity));
   border-radius: f.radius(xl);
@@ -154,6 +155,7 @@ $day-colors: (
     padding: get-daily-token(item-padding);
     border-bottom: 1px solid f.alpha-color(f.theme(border, horizon), 0.1);
     background: f.alpha-color(f.theme(surface-1, horizon), 0.5);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
   }
 
@@ -171,6 +173,7 @@ $day-colors: (
     height: 36px;
     border-radius: f.radius(pill);
     background: f.alpha-color(f.theme(surface-1, horizon), 0.3);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid f.alpha-color(f.theme(border, horizon), 0.2);
     transition: all f.duration(fast) f.ease(ease-out);
@@ -213,6 +216,7 @@ $day-colors: (
     @include m.flex-container(row, space-between, center, nowrap, 2);
     padding: get-daily-token(item-padding);
     background: f.alpha-color(f.theme(surface-2, horizon), 0.2);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border: 1px solid f.alpha-color(f.theme(border, horizon), 0.15);
     border-radius: f.radius(lg);
