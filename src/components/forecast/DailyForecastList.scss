@@ -1,0 +1,507 @@
+// src/components/forecast/DailyForecastList.scss
+@use 'sass:map';
+@use 'sass:color';
+@use 'sass:list';
+@use '../../styles/abstracts/variables' as v;
+@use '../../styles/abstracts/functions' as f;
+@use '../../styles/abstracts/mixins' as m;
+@use '../../styles/abstracts/typography' as t;
+
+// ===== DESIGN TOKEN MAPS =====
+$daily-forecast: (
+  // Layout
+  item-padding: f.space(3),
+  item-gap: f.space(2),
+  list-padding: f.space(3),
+  
+  // Visual design
+  border-opacity: 0.15,
+  surface-opacity: 0.1,
+  pattern-opacity: 0.05,
+  
+  // Expanded state
+  expanded-item-height: 120px,
+  compact-item-height: 100px,
+  
+  // Animation
+  stagger-delay: 0.1s,
+  emerge-duration: 0.6s,
+  transition-duration: 0.3s,
+  
+  // Pattern sizes
+  pattern-size: 40px,
+  pattern-spacing: 20px
+);
+
+$day-colors: (
+  monday: #6366f1,
+  tuesday: #8b5cf6,
+  wednesday: #ec4899,
+  thursday: #f97316,
+  friday: #84cc16,
+  saturday: #06b6d4,
+  sunday: #ef4444
+);
+
+// ===== HELPER FUNCTIONS =====
+@function get-daily-token($key) {
+  @return map.get($daily-forecast, $key);
+}
+
+@function get-day-color($day-name) {
+  $normalized-day: to-lower-case($day-name);
+  @if map.has-key($day-colors, $normalized-day) {
+    @return map.get($day-colors, $normalized-day);
+  }
+  @return f.theme(primary, horizon); // Fallback
+}
+
+@function create-pattern($color) {
+  @return linear-gradient(
+      45deg,
+      f.alpha-color($color, get-daily-token(pattern-opacity)) 25%,
+      transparent 25%,
+      transparent 50%,
+      f.alpha-color($color, get-daily-token(pattern-opacity)) 50%,
+      f.alpha-color($color, get-daily-token(pattern-opacity)) 75%,
+      transparent 75%,
+      transparent
+    );
+}
+
+// ===== KEYFRAME ANIMATIONS =====
+@keyframes chronicle-emerge {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pattern-shift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: get-daily-token(pattern-size) get-daily-token(pattern-size);
+  }
+}
+
+@keyframes data-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes strategic-glow {
+  0%, 100% {
+    box-shadow: 
+      0 4px 12px f.alpha-color(f.theme(primary, horizon), 0.1),
+      0 2px 6px f.alpha-color(f.theme(info, horizon), 0.05);
+  }
+  50% {
+    box-shadow: 
+      0 6px 20px f.alpha-color(f.theme(primary, horizon), 0.15),
+      0 4px 12px f.alpha-color(f.theme(info, horizon), 0.1);
+  }
+}
+
+// ===== COMPONENT STYLES =====
+.daily-forecast {
+  // ===== WEATHER CHRONICLE FOUNDATION =====
+  background: f.alpha-color(f.theme(surface-2, horizon), get-daily-token(surface-opacity));
+  backdrop-filter: blur(16px);
+  border: 1px solid f.alpha-color(f.theme(border, horizon), get-daily-token(border-opacity));
+  border-radius: f.radius(xl);
+  @include m.box-shadow(elevation-2);
+  transition: all f.duration(normal) f.ease(ease-out);
+  overflow: hidden;
+  position: relative;
+
+ :root[data-theme='nightfall'] &,
+ body.theme-nightfall & {
+     background: f.alpha-color(f.theme(surface-1, nightfall), get-daily-token(surface-opacity));
+    border-color: f.alpha-color(f.theme(border, nightfall), get-daily-token(border-opacity));
+ }
+
+  // Archive pattern background
+  &::before {
+    content: '';
+    @include m.position-abs-fill;
+    background-image: 
+      create-pattern(f.theme(primary, horizon)),
+      create-pattern(f.theme(info, horizon));
+    background-size: 
+      get-daily-token(pattern-size) get-daily-token(pattern-size),
+      get-daily-token(pattern-spacing) get-daily-token(pattern-spacing);
+    animation: pattern-shift 20s linear infinite;
+    opacity: 0.3;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  // ===== HEADER =====
+  &__header {
+    @include m.flex-container(row, space-between, center, nowrap, 2);
+    padding: get-daily-token(item-padding);
+    border-bottom: 1px solid f.alpha-color(f.theme(border, horizon), 0.1);
+    background: f.alpha-color(f.theme(surface-1, horizon), 0.5);
+    backdrop-filter: blur(10px);
+  }
+
+  &__title {
+    @include t.text-style(heading-3);
+    margin: 0;
+    color: f.theme(text-primary, horizon);
+    font-weight: f.weight(semi-bold);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  &__expand-btn {
+    @include m.button-base(1, 1.5, pill, transparent);
+    min-width: 36px;
+    height: 36px;
+    border-radius: f.radius(pill);
+    background: f.alpha-color(f.theme(surface-1, horizon), 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid f.alpha-color(f.theme(border, horizon), 0.2);
+    transition: all f.duration(fast) f.ease(ease-out);
+    font-weight: f.weight(bold);
+    
+    &:hover {
+      background: f.alpha-color(f.theme(surface-1, horizon), 0.5);
+      transform: translateY(-2px);
+      @include m.box-shadow(elevation-1);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.95);
+    }
+  }
+
+  // ===== LIST - STRATEGIC PLANNING BOARD =====
+  &__list {
+    margin: 0;
+    padding: get-daily-token(list-padding);
+    list-style: none;
+    @include m.flex-container(column, flex-start, stretch, nowrap, 2);
+  }
+
+  // ===== ITEM - WEATHER LEDGER ENTRY =====
+  &__item {
+    animation: chronicle-emerge get-daily-token(emerge-duration) f.ease(back) both;
+    
+    // Staggered strategic reveal
+    @for $i from 1 through 7 {
+      &:nth-child(#{$i}) {
+        animation-delay: $i * get-daily-token(stagger-delay);
+      }
+    }
+  }
+
+  // ===== DAILY CAPSULE - DATA CALENDAR ENTRY =====
+  .daily-capsule {
+    // ===== LEDGER ROW DESIGN =====
+    @include m.flex-container(row, space-between, center, nowrap, 2);
+    padding: get-daily-token(item-padding);
+    background: f.alpha-color(f.theme(surface-2, horizon), 0.2);
+    backdrop-filter: blur(12px);
+    border: 1px solid f.alpha-color(f.theme(border, horizon), 0.15);
+    border-radius: f.radius(lg);
+    transition: all get-daily-token(transition-duration) ease;
+    min-height: get-daily-token(compact-item-height);
+    position: relative;
+    overflow: hidden;
+
+    // Day-specific color coding
+    @each $day, $color in $day-colors {
+      &[data-day="#{$day}"] {
+        border-left: 4px solid f.alpha-color($color, 0.6);
+        
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 3px;
+          background: linear-gradient(
+            to bottom,
+            f.alpha-color($color, 0.3),
+            f.alpha-color($color, 0.1),
+            transparent
+          );
+        }
+      }
+    }
+
+    // Hover state - Strategic focus
+    &:hover {
+      transform: translateX(8px);
+      background: f.alpha-color(f.theme(surface-2, horizon), 0.3);
+      @include m.box-shadow(elevation-2);
+      animation: strategic-glow 2s ease-in-out infinite;
+      
+      .daily-capsule__day {
+        color: f.theme(primary, horizon);
+        transform: translateX(4px);
+      }
+    }
+
+    // Focus state
+    &:focus-within {
+      @include m.focus(primary);
+      outline-offset: 2px;
+      z-index: f.z(content);
+    }
+
+    // ===== LEDGER COLUMNS =====
+    &__day {
+      @include t.text-style(body);
+      font-weight: f.weight(semi-bold);
+      color: f.theme(text-primary, horizon);
+      min-width: 100px;
+      flex-shrink: 0;
+      transition: all get-daily-token(transition-duration) ease;
+      font-feature-settings: 'c2sc'; // Small caps for day names
+    }
+
+    &__weather {
+      @include m.flex-container(row, flex-start, center, nowrap, 1);
+      flex: 1;
+      min-width: 0;
+    }
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      transition: all 0.3s ease;
+      
+      .daily-capsule:hover & {
+        transform: scale(1.2) rotate(5deg);
+      }
+    }
+
+    &__condition {
+      @include t.text-style(body-sm);
+      color: f.theme(text-secondary, horizon);
+      @include m.text-truncate(1);
+      margin: 0;
+      animation: data-reveal 0.8s ease-out both;
+    }
+
+    &__temp {
+      @include t.text-style(body);
+      font-weight: f.weight(bold);
+      color: f.theme(text-primary, horizon);
+      font-feature-settings: 'tnum' on;
+      min-width: 60px;
+      text-align: right;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    &__rain {
+      @include t.text-style(caption);
+      color: f.theme(info, horizon);
+      font-weight: f.weight(medium);
+      min-width: 50px;
+      text-align: right;
+      opacity: 0.9;
+      
+      &:empty {
+        display: none;
+      }
+    }
+
+    // ===== TODAY HIGHLIGHT =====
+    &[data-today="true"] {
+      background: f.alpha-color(f.theme(primary, horizon), 0.15);
+      border-color: f.alpha-color(f.theme(primary, horizon), 0.3);
+      @include m.box-shadow(elevation-1);
+      
+      .daily-capsule__day {
+        font-weight: f.weight(bold);
+        color: f.theme(primary, horizon);
+      }
+      
+      .daily-capsule__temp {
+        color: f.theme(warning, horizon);
+      }
+    }
+  }
+
+  // ===== EXPANDED STATE =====
+  &--expanded {
+    .daily-capsule {
+      min-height: get-daily-token(expanded-item-height);
+      padding: f.space(3) get-daily-token(item-padding);
+      
+      &__weather {
+        gap: f.space(1.5);
+      }
+      
+      &__icon {
+        width: 40px;
+        height: 40px;
+      }
+      
+      &__condition {
+        @include t.text-style(body);
+      }
+    }
+  }
+
+  // ===== EMPTY STATE =====
+  &__empty {
+    @include m.flex-container(column, center, center, nowrap, 1.5);
+    padding: f.space(6);
+    color: f.theme(text-secondary, horizon);
+    @include t.text-style(body);
+    text-align: center;
+    min-height: 200px;
+  }
+
+  // ===== RESPONSIVE DESIGN =====
+  @include m.respond-down-to(md) {
+    &__header {
+      padding: f.space(2);
+    }
+    
+    &__list {
+      padding: f.space(2);
+      gap: f.space(1.5);
+    }
+    
+    .daily-capsule {
+      padding: f.space(2);
+      gap: f.space(1.5);
+      
+      &__day {
+        min-width: 80px;
+        @include t.text-style(body-sm);
+      }
+      
+      &__icon {
+        width: 28px;
+        height: 28px;
+      }
+      
+      &__condition {
+        @include t.text-style(caption);
+      }
+    }
+  }
+
+  @include m.respond-down-to(sm) {
+    .daily-capsule {
+      @include m.flex-container(column, center, stretch, nowrap, 1);
+      text-align: center;
+      padding: f.space(2);
+      
+      &__weather {
+        justify-content: center;
+        order: 2;
+      }
+      
+      &__day {
+        order: 1;
+        min-width: auto;
+        font-weight: f.weight(bold);
+      }
+      
+      &__temp {
+        order: 3;
+        text-align: center;
+        min-width: auto;
+      }
+      
+      &__rain {
+        order: 4;
+        text-align: center;
+        min-width: auto;
+      }
+    }
+  }
+
+  // ===== ACCESSIBILITY =====
+  @include m.reduce-motion {
+    &::before {
+      animation: none;
+    }
+    
+    .daily-capsule {
+      animation: none;
+      
+      &:hover {
+        transform: none;
+      }
+    }
+    
+    &__condition {
+      animation: none;
+    }
+  }
+
+  @include m.high-contrast {
+    border: 2px solid f.theme(text-primary, horizon);
+    
+    .daily-capsule {
+      border: 1px solid f.theme(text-primary, horizon);
+      background: f.theme(background, horizon);
+      
+      &::before {
+        display: none;
+      }
+    }
+  }
+
+  // ===== BROWSER FALLBACKS =====
+  @supports not (backdrop-filter: blur(12px)) {
+    background: f.alpha-color(f.theme(surface-2, horizon), 0.9);
+    
+    .daily-capsule {
+      background: f.alpha-color(f.theme(surface-2, horizon), 0.95);
+    }
+    
+    &--theme-dark {
+      background: f.alpha-color(f.theme(surface-1, nightfall), 0.9);
+      
+      .daily-capsule {
+        background: f.alpha-color(f.theme(surface-1, nightfall), 0.95);
+      }
+    }
+  }
+}
+
+// ===== PRINT STYLES =====
+@media print {
+  .daily-forecast {
+    border: 1px solid #000;
+    background: #fff !important;
+    
+    &::before {
+      display: none;
+    }
+    
+    .daily-capsule {
+      background: #fff !important;
+      border: 1px solid #000;
+      color: #000 !important;
+      break-inside: avoid;
+      
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
